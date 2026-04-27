@@ -188,11 +188,16 @@ RSpec.describe "Vehicles", type: :request do
 
       before { sign_in user }
 
-      it "deletes own vehicle and redirects to vehicles_path with flash[:notice]" do
-        vehicle  # ensure record exists before count assertion
+      it "deletes own vehicle and cascades associated records" do
+        vehicle
+        ServiceLogEntry.create!(vehicle: vehicle)
+        ReminderThreshold.create!(vehicle: vehicle)
+
         expect {
           delete vehicle_path(vehicle)
         }.to change(Vehicle, :count).by(-1)
+          .and change(ServiceLogEntry, :count).by(-1)
+          .and change(ReminderThreshold, :count).by(-1)
         expect(response).to redirect_to(vehicles_path)
         follow_redirect!
         expect(response.body).to include("deleted successfully")

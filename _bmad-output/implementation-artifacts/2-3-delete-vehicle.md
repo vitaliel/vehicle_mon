@@ -1,6 +1,6 @@
 # Story 2.3: Delete Vehicle
 
-Status: review
+Status: done
 
 ## Story
 
@@ -29,6 +29,11 @@ so that I can remove a car I no longer own.
     - `DELETE /vehicles/:id` — authenticated, own vehicle → redirects to `/vehicles`, flash[:notice] set, vehicle count decreases by 1.
     - `DELETE /vehicles/:id` — authenticated, other user's vehicle → redirects to root, vehicle NOT deleted.
 
+### Review Findings
+
+- [x] [Review][Patch] Success notice is unconditional even if destroy fails [app/controllers/vehicles_controller.rb:32]
+- [x] [Review][Patch] Destroy spec does not verify cascade deletion of associated records [spec/requests/vehicles_spec.rb:191]
+
 ## Dev Notes
 
 ### Architecture & Critical Constraints
@@ -49,8 +54,12 @@ class VehiclesController < ApplicationController
   # ... existing index, new, create, edit, update ...
 
   def destroy
-    @vehicle.destroy
-    redirect_to vehicles_path, notice: "Vehicle deleted successfully."
+    if @vehicle.destroy
+      redirect_to vehicles_path, notice: "Vehicle deleted successfully."
+    else
+      error_message = @vehicle.errors.full_messages.to_sentence
+      redirect_to vehicles_path, alert: error_message.presence || "Vehicle could not be deleted."
+    end
   end
 
   private
@@ -168,6 +177,7 @@ claude-sonnet-4.6
 ### Completion Notes List
 
 - Story 2.3 implemented. Extended `before_action :set_vehicle` in `VehiclesController` to include `:destroy`. Added `destroy` action calling `@vehicle.destroy` followed by `redirect_to vehicles_path, notice: "Vehicle deleted successfully."`. Wrong-user access automatically triggers `RecordNotFound` → root redirect via existing `ApplicationController` rescue — no custom authorization needed. Added "Delete" button to `_vehicle_card` using `data: { turbo_method: :delete, turbo_confirm: ... }` Turbo pattern. Appended 3 request specs to existing `vehicles_spec.rb` covering all ACs. Full suite: 64 examples, 0 failures.
+- Code review follow-up applied: `destroy` now reports failure via `flash[:alert]` when deletion is unsuccessful, and request specs now verify cascade deletion of `ServiceLogEntry` and `ReminderThreshold` records.
 
 ### File List
 
@@ -179,3 +189,4 @@ claude-sonnet-4.6
 
 - 2026-04-27: Story 2.3 created — Delete Vehicle context prepared for development.
 - 2026-04-27: Story 2.3 implemented — VehiclesController destroy action, vehicle card Delete button, 3 new request specs. 64 examples, 0 failures.
+- 2026-04-27: Code review patches applied — destroy failure branch added with alert, and cascade-deletion assertions added to request specs.
