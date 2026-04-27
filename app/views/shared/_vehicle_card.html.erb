@@ -1,0 +1,10 @@
+<div class="card h-100 shadow-sm">
+  <div class="card-body">
+    <h5 class="card-title"><%= vehicle.year %> <%= vehicle.make %> <%= vehicle.model %></h5>
+    <p class="card-text text-muted">
+      <i class="bi bi-speedometer2"></i>
+      <%= number_with_delimiter(vehicle.current_mileage) %> km
+    </p>
+    <%= link_to "View", vehicle_path(vehicle), class: "btn btn-sm btn-outline-primary" %>
+  </div>
+</div>

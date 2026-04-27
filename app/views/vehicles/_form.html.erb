@@ -1,0 +1,28 @@
+<%= form_with(model: vehicle, class: "needs-validation") do |f| %>
+  <%= render 'devise/shared/error_messages', resource: vehicle %>
+
+  <div class="mb-3">
+    <%= f.label :make, class: "form-label" %>
+    <%= f.text_field :make, class: "form-control", placeholder: "e.g. Toyota", required: true %>
+  </div>
+
+  <div class="mb-3">
+    <%= f.label :model, class: "form-label" %>
+    <%= f.text_field :model, class: "form-control", placeholder: "e.g. Camry", required: true %>
+  </div>
+
+  <div class="mb-3">
+    <%= f.label :year, class: "form-label" %>
+    <%= f.number_field :year, class: "form-control", placeholder: "e.g. 2020", min: 1886, max: Date.current.year + 1, required: true %>
+  </div>
+
+  <div class="mb-3">
+    <%= f.label :current_mileage, "Current Mileage (km)", class: "form-label" %>
+    <%= f.number_field :current_mileage, class: "form-control", placeholder: "e.g. 45000", min: 0, required: true %>
+  </div>
+
+  <div class="d-flex gap-2">
+    <%= f.submit "Save Vehicle", class: "btn btn-primary" %>
+    <%= link_to "Cancel", vehicles_path, class: "btn btn-outline-secondary" %>
+  </div>
+<% end %>
