@@ -28,6 +28,8 @@
     <nav class="navbar navbar-light bg-light px-3 mb-3">
       <span class="navbar-brand mb-0 h1">Vehicle Tracker</span>
       <% if user_signed_in? %>
+        <%= link_to "My Vehicles", vehicles_path,
+              class: "btn btn-outline-success btn-sm me-2" %>
         <%= link_to "Account Settings", edit_user_registration_path,
               class: "btn btn-outline-primary btn-sm me-2" %>
         <%= link_to "Sign out", destroy_user_session_path,

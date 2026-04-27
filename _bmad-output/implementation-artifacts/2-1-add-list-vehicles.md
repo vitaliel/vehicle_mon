@@ -1,6 +1,6 @@
 # Story 2.1: Add & List Vehicles
 
-Status: ready-for-dev
+Status: review
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 
@@ -20,21 +20,21 @@ so that I can start tracking maintenance for my cars.
 
 ## Tasks / Subtasks
 
-- [ ] Task 1: Create Vehicle model and migration (AC: #2, #3)
-  - [ ] Generate migration: `vehicles(user_id:references, make:string, model:string, year:integer, current_mileage:integer)`.
-  - [ ] Add `belongs_to :user` and `has_many :service_log_entries, dependent: :destroy` and `has_many :reminder_thresholds, dependent: :destroy` to `Vehicle`.
-  - [ ] Add model validations: `validates :make, :model, presence: true`; `validates :year, numericality: { only_integer: true, greater_than: 1885, less_than_or_equal_to: Date.current.year + 1 }`; `validates :current_mileage, numericality: { only_integer: true, greater_than_or_equal_to: 0 }`.
-  - [ ] Add `has_many :vehicles, dependent: :destroy` to `User` model.
+- [x] Task 1: Create Vehicle model and migration (AC: #2, #3)
+  - [x] Generate migration: `vehicles(user_id:references, make:string, model:string, year:integer, current_mileage:integer)`.
+  - [x] Add `belongs_to :user` and `has_many :service_log_entries, dependent: :destroy` and `has_many :reminder_thresholds, dependent: :destroy` to `Vehicle`.
+  - [x] Add model validations: `validates :make, :model, presence: true`; `validates :year, numericality: { only_integer: true, greater_than: 1885, less_than_or_equal_to: Date.current.year + 1 }`; `validates :current_mileage, numericality: { only_integer: true, greater_than_or_equal_to: 0 }`.
+  - [x] Add `has_many :vehicles, dependent: :destroy` to `User` model.
 
-- [ ] Task 2: Create VehiclesController with index, new, create actions (AC: #1, #2, #3, #4)
-  - [ ] Create `app/controllers/vehicles_controller.rb` with `index`, `new`, `create` actions.
-  - [ ] Scope all queries through `current_user.vehicles` — never `Vehicle.find`.
-  - [ ] `index`: `@vehicles = current_user.vehicles.order(created_at: :desc)`.
-  - [ ] `create`: on success redirect to `vehicles_path` with `flash[:notice]`; on failure `render :new, status: :unprocessable_entity`.
+- [x] Task 2: Create VehiclesController with index, new, create actions (AC: #1, #2, #3, #4)
+  - [x] Create `app/controllers/vehicles_controller.rb` with `index`, `new`, `create` actions.
+  - [x] Scope all queries through `current_user.vehicles` — never `Vehicle.find`.
+  - [x] `index`: `@vehicles = current_user.vehicles.order(created_at: :desc)`.
+  - [x] `create`: on success redirect to `vehicles_path` with `flash[:notice]`; on failure `render :new, status: :unprocessable_entity`.
 
-- [ ] Task 3: Add vehicle routes (AC: #1, #2)
-  - [ ] Replace `root "pages#index"` with `root "pages#index"` (leave root for now — dashboard is Epic 5).
-  - [ ] Add full nested routes per architecture spec:
+- [x] Task 3: Add vehicle routes (AC: #1, #2)
+  - [x] Replace `root "pages#index"` with `root "pages#index"` (leave root for now — dashboard is Epic 5).
+  - [x] Add full nested routes per architecture spec:
     ```ruby
     resources :vehicles do
       resources :service_log_entries
@@ -44,19 +44,19 @@ so that I can start tracking maintenance for my cars.
       end
     end
     ```
-  - [ ] Remove the placeholder `get "pages/index"` route after confirming root still works.
+  - [x] Remove the placeholder `get "pages/index"` route after confirming root still works.
 
-- [ ] Task 4: Create views (AC: #1, #2, #4, #5)
-  - [ ] Create `app/views/vehicles/index.html.erb`: page heading "My Vehicles", "Add Vehicle" button (`new_vehicle_path`), list rendering `_vehicle_card` partial for each vehicle, empty-state div if `@vehicles.empty?`.
-  - [ ] Create `app/views/vehicles/new.html.erb`: page heading "Add Vehicle", render `_form` partial.
-  - [ ] Create `app/views/vehicles/_form.html.erb`: Bootstrap form with labeled fields for make (text), model (text), year (number), current mileage (number); submit button; render `devise/shared/error_messages` partial for validation errors.
-  - [ ] Create/update `app/views/shared/_vehicle_card.html.erb`: Bootstrap card showing make, model, year, current mileage (formatted with `number_with_delimiter`). Include a "View" link to `vehicle_path(vehicle)` (show page not required for this story but link can point there for future use).
-  - [ ] Add "My Vehicles" nav link to `app/views/layouts/application.html.erb` for signed-in users.
+- [x] Task 4: Create views (AC: #1, #2, #4, #5)
+  - [x] Create `app/views/vehicles/index.html.erb`: page heading "My Vehicles", "Add Vehicle" button (`new_vehicle_path`), list rendering `_vehicle_card` partial for each vehicle, empty-state div if `@vehicles.empty?`.
+  - [x] Create `app/views/vehicles/new.html.erb`: page heading "Add Vehicle", render `_form` partial.
+  - [x] Create `app/views/vehicles/_form.html.erb`: Bootstrap form with labeled fields for make (text), model (text), year (number), current mileage (number); submit button; render `devise/shared/error_messages` partial for validation errors.
+  - [x] Create/update `app/views/shared/_vehicle_card.html.erb`: Bootstrap card showing make, model, year, current mileage (formatted with `number_with_delimiter`). Include a "View" link to `vehicle_path(vehicle)` (show page not required for this story but link can point there for future use).
+  - [x] Add "My Vehicles" nav link to `app/views/layouts/application.html.erb` for signed-in users.
 
-- [ ] Task 5: Create Vehicle factory and specs (AC: #1–#5)
-  - [ ] Create `spec/factories/vehicles.rb` with a valid vehicle associated to a user.
-  - [ ] Create `spec/models/vehicle_spec.rb`: test all presence and numericality validations using Shoulda Matchers; test `belongs_to :user`.
-  - [ ] Create `spec/requests/vehicles_spec.rb`:
+- [x] Task 5: Create Vehicle factory and specs (AC: #1–#5)
+  - [x] Create `spec/factories/vehicles.rb` with a valid vehicle associated to a user.
+  - [x] Create `spec/models/vehicle_spec.rb`: test all presence and numericality validations using Shoulda Matchers; test `belongs_to :user`.
+  - [x] Create `spec/requests/vehicles_spec.rb`:
     - GET `/vehicles` — unauthenticated → redirects to sign-in.
     - GET `/vehicles` — authenticated, no vehicles → 200, empty state rendered.
     - GET `/vehicles` — authenticated, with vehicles → 200, vehicle make/model visible.
@@ -197,5 +197,35 @@ claude-sonnet-4.6
 ### Completion Notes List
 
 - Story 2.1 context created. Epic 2 first story — Vehicle model, migration, VehiclesController (index/new/create), views, shared _vehicle_card partial, request + model specs.
+- ✅ Task 1 complete: Vehicle migration created (`vehicles` table with user_id FK, make, model, year, current_mileage). Vehicle model with all validations and associations. Stub models for ServiceLogEntry/ReminderThreshold (needed for `has_many` validation). User model updated with `has_many :vehicles, dependent: :destroy`. 7 model specs pass.
+- ✅ Task 2 complete: VehiclesController with index/new/create, all queries scoped through `current_user.vehicles`, flash[:notice] on success, `status: :unprocessable_entity` on failure.
+- ✅ Task 3 complete: Full nested routes block added per architecture spec (vehicles → service_log_entries, reminder_thresholds, update_mileage member route). Removed `get "pages/index"` placeholder. Updated `pages_spec.rb` to use `root_path` instead of the removed `/pages/index` route.
+- ✅ Task 4 complete: `vehicles/index.html.erb` (empty state + vehicle card grid), `vehicles/new.html.erb`, `vehicles/_form.html.erb` (Bootstrap labeled fields, error messages), `shared/_vehicle_card.html.erb` (Bootstrap card with mileage formatted via `number_with_delimiter`), "My Vehicles" nav link added to application layout.
+- ✅ Task 5 complete: `spec/factories/vehicles.rb`, `spec/models/vehicle_spec.rb` (7 specs), `spec/requests/vehicles_spec.rb` (10 specs). Full suite: 52 examples, 0 failures.
 
 ### File List
+
+- `db/migrate/20260427184823_create_vehicles.rb` (created)
+- `db/migrate/20260427184943_create_service_log_entries.rb` (created — stub for future Epic 3)
+- `db/migrate/20260427184944_create_reminder_thresholds.rb` (created — stub for future Epic 4)
+- `db/schema.rb` (auto-updated)
+- `app/models/vehicle.rb` (created)
+- `app/models/service_log_entry.rb` (created — stub for future Epic 3)
+- `app/models/reminder_threshold.rb` (created — stub for future Epic 4)
+- `app/models/user.rb` (modified — added `has_many :vehicles, dependent: :destroy`)
+- `app/controllers/vehicles_controller.rb` (created)
+- `app/views/vehicles/index.html.erb` (created)
+- `app/views/vehicles/new.html.erb` (created)
+- `app/views/vehicles/_form.html.erb` (created)
+- `app/views/shared/_vehicle_card.html.erb` (updated — was empty stub)
+- `app/views/layouts/application.html.erb` (modified — added My Vehicles nav link)
+- `config/routes.rb` (modified — full nested vehicles routes, removed `get "pages/index"`)
+- `spec/factories/vehicles.rb` (created)
+- `spec/models/vehicle_spec.rb` (created)
+- `spec/requests/vehicles_spec.rb` (created)
+- `spec/requests/pages_spec.rb` (modified — updated to use `root_path` instead of removed `/pages/index` route)
+
+## Change Log
+
+- 2026-04-27: Story 2.1 created — Add & List Vehicles context prepared for development.
+- 2026-04-27: Story 2.1 implemented — Vehicle model+migration, VehiclesController (index/new/create), full nested routes, vehicles views, _vehicle_card partial, My Vehicles nav link, model spec (7), request spec (10). 52 examples, 0 failures.
