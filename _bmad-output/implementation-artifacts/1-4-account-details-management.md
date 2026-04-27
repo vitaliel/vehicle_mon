@@ -1,6 +1,6 @@
 # Story 1.4: Account Details Management
 
-Status: ready-for-dev
+Status: review
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 
@@ -19,23 +19,23 @@ so that I can keep my login credentials current.
 
 ## Tasks / Subtasks
 
-- [ ] Task 1: Add account settings access and edit UI (AC: #1)
-  - [ ] Add an authenticated navigation link to account settings using `edit_user_registration_path`.
-  - [ ] Create `app/views/devise/registrations/edit.html.erb` with Bootstrap layout matching existing Devise pages.
-  - [ ] Ensure form includes labeled fields for email, current password, new password, and password confirmation (NFR11).
-  - [ ] Keep Devise shared links and error rendering pattern (`devise/shared/error_messages`) for consistency.
+- [x] Task 1: Add account settings access and edit UI (AC: #1)
+  - [x] Add an authenticated navigation link to account settings using `edit_user_registration_path`.
+  - [x] Create `app/views/devise/registrations/edit.html.erb` with Bootstrap layout matching existing Devise pages.
+  - [x] Ensure form includes labeled fields for email, current password, new password, and password confirmation (NFR11).
+  - [x] Keep Devise shared links and error rendering pattern (`devise/shared/error_messages`) for consistency.
 
-- [ ] Task 2: Implement account update behavior through Devise defaults (AC: #2, #3, #4)
-  - [ ] Use Devise `RegistrationsController#update` default flow (no custom controller override) for account edits.
-  - [ ] Verify valid email update persists and success notice appears.
-  - [ ] Verify valid password update requires correct current password and preserves signed-in session.
-  - [ ] Verify incorrect current password rejects changes and re-renders with validation errors (`status: :unprocessable_entity`).
+- [x] Task 2: Implement account update behavior through Devise defaults (AC: #2, #3, #4)
+  - [x] Use Devise `RegistrationsController#update` default flow (no custom controller override) for account edits.
+  - [x] Verify valid email update persists and success notice appears.
+  - [x] Verify valid password update requires correct current password and preserves signed-in session.
+  - [x] Verify incorrect current password rejects changes and re-renders with validation errors (`status: :unprocessable_entity`).
 
-- [ ] Task 3: Add request coverage for account details flow (AC: #1, #2, #3, #4)
-  - [ ] Add/extend request specs for GET `/users/edit` (authenticated success, unauthenticated redirect to sign-in).
-  - [ ] Add spec for valid email update and persistence.
-  - [ ] Add spec for valid password update with current password and post-update authenticated access.
-  - [ ] Add spec for invalid current password update rejection with unchanged credentials.
+- [x] Task 3: Add request coverage for account details flow (AC: #1, #2, #3, #4)
+  - [x] Add/extend request specs for GET `/users/edit` (authenticated success, unauthenticated redirect to sign-in).
+  - [x] Add spec for valid email update and persistence.
+  - [x] Add spec for valid password update with current password and post-update authenticated access.
+  - [x] Add spec for invalid current password update rejection with unchanged credentials.
 
 ## Dev Notes
 
@@ -79,7 +79,7 @@ so that I can keep my login credentials current.
 
 ### Agent Model Used
 
-GPT-5.3-Codex (gpt-5.3-codex)
+claude-sonnet-4.6
 
 ### Debug Log References
 
@@ -87,11 +87,18 @@ GPT-5.3-Codex (gpt-5.3-codex)
 
 - Story context generated from Epic 1 / Story 1.4 with architecture and prior-story implementation references.
 - Ready for dev implementation.
+- ✅ Task 1 complete: `edit_user_registration_path` nav link added to application layout; `app/views/devise/registrations/edit.html.erb` created with Bootstrap layout, labeled email/current password/new password/confirmation fields, shared error messages partial.
+- ✅ Task 2 complete: Devise default `RegistrationsController#update` flow used; email update, password update, and incorrect-current-password rejection all verified via specs.
+- ✅ Task 3 complete: `spec/requests/account_spec.rb` created (8 specs covering all ACs — unauthenticated redirect, edit page renders, email pre-fill, labeled fields, nav link, valid email update, valid password update, incorrect password rejection). 35 examples, 0 failures.
 
 ### File List
 
+- `app/views/layouts/application.html.erb` (modified — Account Settings nav link)
+- `app/views/devise/registrations/edit.html.erb` (created — Bootstrap account settings form)
+- `spec/requests/account_spec.rb` (created — account edit/update request specs)
 - `_bmad-output/implementation-artifacts/1-4-account-details-management.md` (this story)
 
 ## Change Log
 
 - 2026-04-27: Story 1.4 created — Account Details Management context prepared for development.
+- 2026-04-27: Story 1.4 implemented — Bootstrap account settings view, Account Settings nav link, Devise default update flow, request specs. 35 examples, 0 failures.
