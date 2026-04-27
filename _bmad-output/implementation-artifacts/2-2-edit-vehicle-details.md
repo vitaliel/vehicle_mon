@@ -1,6 +1,6 @@
 # Story 2.2: Edit Vehicle Details
 
-Status: ready-for-dev
+Status: review
 
 ## Story
 
@@ -16,22 +16,22 @@ so that I can correct mistakes or update information.
 
 ## Tasks / Subtasks
 
-- [ ] Task 1: Add `edit` and `update` actions to VehiclesController (AC: #1, #2, #3)
-  - [ ] Add `before_action :set_vehicle, only: [:edit, :update]` with `current_user.vehicles.find(params[:id])` — triggers RecordNotFound for wrong-user access.
-  - [ ] `edit` action: simply renders the `edit` template with `@vehicle`.
-  - [ ] `update` action: call `@vehicle.update(vehicle_params)`; on success `redirect_to vehicles_path, notice: "Vehicle updated successfully."`; on failure `render :edit, status: :unprocessable_entity`.
-  - [ ] `vehicle_params` already defined — no changes needed, all editable fields already permitted.
+- [x] Task 1: Add `edit` and `update` actions to VehiclesController (AC: #1, #2, #3)
+  - [x] Add `before_action :set_vehicle, only: [:edit, :update]` with `current_user.vehicles.find(params[:id])` — triggers RecordNotFound for wrong-user access.
+  - [x] `edit` action: simply renders the `edit` template with `@vehicle`.
+  - [x] `update` action: call `@vehicle.update(vehicle_params)`; on success `redirect_to vehicles_path, notice: "Vehicle updated successfully."`; on failure `render :edit, status: :unprocessable_entity`.
+  - [x] `vehicle_params` already defined — no changes needed, all editable fields already permitted.
 
-- [ ] Task 2: Create `app/views/vehicles/edit.html.erb` (AC: #1, #2)
-  - [ ] Page heading: "Edit Vehicle".
-  - [ ] Render the existing `_form` partial: `<%= render 'form', vehicle: @vehicle %>`.
-  - [ ] The existing `_form` partial is already compatible with edit (uses `form_with(model: vehicle)` which auto-routes to PATCH for persisted records — no changes to `_form` needed).
+- [x] Task 2: Create `app/views/vehicles/edit.html.erb` (AC: #1, #2)
+  - [x] Page heading: "Edit Vehicle".
+  - [x] Render the existing `_form` partial: `<%= render 'form', vehicle: @vehicle %>`.
+  - [x] The existing `_form` partial is already compatible with edit (uses `form_with(model: vehicle)` which auto-routes to PATCH for persisted records — no changes to `_form` needed).
 
-- [ ] Task 3: Surface "Edit" link from vehicle card and index (AC: #1)
-  - [ ] Add an "Edit" button to `app/views/shared/_vehicle_card.html.erb` alongside the existing "View" link: `<%= link_to "Edit", edit_vehicle_path(vehicle), class: "btn btn-sm btn-outline-secondary" %>`.
+- [x] Task 3: Surface "Edit" link from vehicle card and index (AC: #1)
+  - [x] Add an "Edit" button to `app/views/shared/_vehicle_card.html.erb` alongside the existing "View" link: `<%= link_to "Edit", edit_vehicle_path(vehicle), class: "btn btn-sm btn-outline-secondary" %>`.
 
-- [ ] Task 4: Add request specs for edit/update actions (AC: #1–#3)
-  - [ ] Add to `spec/requests/vehicles_spec.rb` (do NOT create a new file):
+- [x] Task 4: Add request specs for edit/update actions (AC: #1–#3)
+  - [x] Add to `spec/requests/vehicles_spec.rb` (do NOT create a new file):
     - `GET /vehicles/:id/edit` — unauthenticated → redirects to sign-in.
     - `GET /vehicles/:id/edit` — authenticated, own vehicle → 200.
     - `GET /vehicles/:id/edit` — authenticated, other user's vehicle → redirect to root.
@@ -210,4 +210,16 @@ claude-sonnet-4.6
 
 ### Completion Notes List
 
+- Story 2.2 implemented. Added `edit` and `update` actions to `VehiclesController` with `before_action :set_vehicle` scoped via `current_user.vehicles.find` — wrong-user access automatically triggers `RecordNotFound` → root redirect via existing `ApplicationController` rescue. Created `app/views/vehicles/edit.html.erb` reusing the existing `_form` partial (no partial changes needed). Added "Edit" button to `_vehicle_card`. Appended 7 request specs to existing `vehicles_spec.rb` covering all ACs. Full suite: 59 examples, 0 failures.
+
 ### File List
+
+- `app/controllers/vehicles_controller.rb` (modified — added `set_vehicle` before_action, `edit`, `update` actions)
+- `app/views/vehicles/edit.html.erb` (created)
+- `app/views/shared/_vehicle_card.html.erb` (modified — added "Edit" link)
+- `spec/requests/vehicles_spec.rb` (modified — appended edit/update specs)
+
+## Change Log
+
+- 2026-04-27: Story 2.2 created — Edit Vehicle Details context prepared for development.
+- 2026-04-27: Story 2.2 implemented — VehiclesController edit/update, edit view, vehicle card Edit link, 7 new request specs. 59 examples, 0 failures.

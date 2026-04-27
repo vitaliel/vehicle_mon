@@ -6,5 +6,6 @@
       <%= number_with_delimiter(vehicle.current_mileage) %> km
     </p>
     <%= link_to "View", vehicle_path(vehicle), class: "btn btn-sm btn-outline-primary" %>
+    <%= link_to "Edit", edit_vehicle_path(vehicle), class: "btn btn-sm btn-outline-secondary" %>
   </div>
 </div>
