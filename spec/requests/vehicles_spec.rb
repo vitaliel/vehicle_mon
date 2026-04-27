@@ -173,4 +173,43 @@ RSpec.describe "Vehicles", type: :request do
       end
     end
   end
+
+  describe "DELETE /vehicles/:id" do
+    context "when unauthenticated" do
+      it "redirects to sign-in" do
+        vehicle = create(:vehicle)
+        delete vehicle_path(vehicle)
+        expect(response).to redirect_to(new_user_session_path)
+      end
+    end
+
+    context "when authenticated" do
+      let(:vehicle) { create(:vehicle, user: user) }
+
+      before { sign_in user }
+
+      it "deletes own vehicle and cascades associated records" do
+        vehicle
+        ServiceLogEntry.create!(vehicle: vehicle)
+        ReminderThreshold.create!(vehicle: vehicle)
+
+        expect {
+          delete vehicle_path(vehicle)
+        }.to change(Vehicle, :count).by(-1)
+          .and change(ServiceLogEntry, :count).by(-1)
+          .and change(ReminderThreshold, :count).by(-1)
+        expect(response).to redirect_to(vehicles_path)
+        follow_redirect!
+        expect(response.body).to include("deleted successfully")
+      end
+
+      it "redirects to root for another user's vehicle without deleting it" do
+        other_vehicle = create(:vehicle, user: other_user)
+        expect {
+          delete vehicle_path(other_vehicle)
+        }.not_to change(Vehicle, :count)
+        expect(response).to redirect_to(root_path)
+      end
+    end
+  end
 end
