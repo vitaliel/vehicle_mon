@@ -123,6 +123,11 @@ RSpec.describe "Vehicles", type: :request do
         get edit_vehicle_path(other_vehicle)
         expect(response).to redirect_to(root_path)
       end
+
+      it "redirects to root for a non-existent vehicle" do
+        get edit_vehicle_path(-1)
+        expect(response).to redirect_to(root_path)
+      end
     end
   end
 
@@ -156,7 +161,14 @@ RSpec.describe "Vehicles", type: :request do
 
       it "redirects to root for another user's vehicle" do
         other_vehicle = create(:vehicle, user: other_user)
+        original_make = other_vehicle.make
         patch vehicle_path(other_vehicle), params: { vehicle: { make: "Honda" } }
+        expect(response).to redirect_to(root_path)
+        expect(other_vehicle.reload.make).to eq(original_make)
+      end
+
+      it "redirects to root for a non-existent vehicle" do
+        patch vehicle_path(-1), params: { vehicle: { make: "Honda" } }
         expect(response).to redirect_to(root_path)
       end
     end

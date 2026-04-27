@@ -1,6 +1,6 @@
 # Story 2.2: Edit Vehicle Details
 
-Status: review
+Status: done
 
 ## Story
 
@@ -38,6 +38,11 @@ so that I can correct mistakes or update information.
     - `PATCH /vehicles/:id` — valid params → redirects to `/vehicles`, flash[:notice] set.
     - `PATCH /vehicles/:id` — invalid params (missing make) → 422, re-renders edit form.
     - `PATCH /vehicles/:id` — other user's vehicle → redirect to root.
+
+### Review Findings
+
+- [x] [Review][Patch] Unauthorized PATCH spec does not assert no mutation [spec/requests/vehicles_spec.rb:157-160]
+- [x] [Review][Patch] Missing not-found ID coverage for edit/update request specs [spec/requests/vehicles_spec.rb:103-163]
 
 ## Dev Notes
 
