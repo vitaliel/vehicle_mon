@@ -65,6 +65,11 @@ so that I can start tracking maintenance for my cars.
     - POST `/vehicles` with valid params → redirects to `/vehicles`, flash[:notice] set.
     - POST `/vehicles` with invalid params (missing make) → 422, re-renders new form.
 
+### Review Findings
+
+- [x] [Review][Defer] Vehicle card "View" link behavior before `show` exists [app/views/shared/_vehicle_card.html.erb:8] — deferred for future story work. Reason: Vehicle view will be implemented later.
+- [x] [Review][Patch] Remove future-epic service/reminder schema additions from story scope [db/migrate/20260427184943_create_service_log_entries.rb, db/migrate/20260427184944_create_reminder_thresholds.rb, db/schema.rb]
+
 ## Dev Notes
 
 ### Architecture and Constraints
