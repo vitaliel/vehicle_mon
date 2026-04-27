@@ -1,5 +1,5 @@
 class VehiclesController < ApplicationController
-  before_action :set_vehicle, only: [ :edit, :update ]
+  before_action :set_vehicle, only: [ :edit, :update, :destroy ]
 
   def index
     @vehicles = current_user.vehicles.order(created_at: :desc)
@@ -27,6 +27,11 @@ class VehiclesController < ApplicationController
     else
       render :edit, status: :unprocessable_entity
     end
+  end
+
+  def destroy
+    @vehicle.destroy
+    redirect_to vehicles_path, notice: "Vehicle deleted successfully."
   end
 
   private

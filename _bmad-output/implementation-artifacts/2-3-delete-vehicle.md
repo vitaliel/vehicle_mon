@@ -1,6 +1,6 @@
 # Story 2.3: Delete Vehicle
 
-Status: ready-for-dev
+Status: review
 
 ## Story
 
@@ -15,16 +15,16 @@ so that I can remove a car I no longer own.
 
 ## Tasks / Subtasks
 
-- [ ] Task 1: Add `destroy` action to VehiclesController (AC: #1, #2)
-  - [ ] Extend `before_action :set_vehicle` to include `:destroy`.
-  - [ ] Add `destroy` action: call `@vehicle.destroy`, then `redirect_to vehicles_path, notice: "Vehicle deleted successfully."`.
-  - [ ] Do NOT add custom authorization or rescue logic — ownership scoping via `current_user.vehicles.find` triggers `RecordNotFound` for wrong-user access, already rescued by `ApplicationController`.
+- [x] Task 1: Add `destroy` action to VehiclesController (AC: #1, #2)
+  - [x] Extend `before_action :set_vehicle` to include `:destroy`.
+  - [x] Add `destroy` action: call `@vehicle.destroy`, then `redirect_to vehicles_path, notice: "Vehicle deleted successfully."`.
+  - [x] Do NOT add custom authorization or rescue logic — ownership scoping via `current_user.vehicles.find` triggers `RecordNotFound` for wrong-user access, already rescued by `ApplicationController`.
 
-- [ ] Task 2: Add "Delete" button to `app/views/shared/_vehicle_card.html.erb` (AC: #1)
-  - [ ] Add delete link after the "Edit" button using Turbo method override: `link_to "Delete", vehicle_path(vehicle), data: { turbo_method: :delete, turbo_confirm: "Are you sure you want to delete this vehicle?" }, class: "btn btn-sm btn-outline-danger"`.
+- [x] Task 2: Add "Delete" button to `app/views/shared/_vehicle_card.html.erb` (AC: #1)
+  - [x] Add delete link after the "Edit" button using Turbo method override: `link_to "Delete", vehicle_path(vehicle), data: { turbo_method: :delete, turbo_confirm: "Are you sure you want to delete this vehicle?" }, class: "btn btn-sm btn-outline-danger"`.
 
-- [ ] Task 3: Add request specs for destroy action (AC: #1–#2)
-  - [ ] Add to `spec/requests/vehicles_spec.rb` (do NOT create a new file):
+- [x] Task 3: Add request specs for destroy action (AC: #1–#2)
+  - [x] Add to `spec/requests/vehicles_spec.rb` (do NOT create a new file):
     - `DELETE /vehicles/:id` — unauthenticated → redirects to sign-in.
     - `DELETE /vehicles/:id` — authenticated, own vehicle → redirects to `/vehicles`, flash[:notice] set, vehicle count decreases by 1.
     - `DELETE /vehicles/:id` — authenticated, other user's vehicle → redirects to root, vehicle NOT deleted.
@@ -167,4 +167,15 @@ claude-sonnet-4.6
 
 ### Completion Notes List
 
+- Story 2.3 implemented. Extended `before_action :set_vehicle` in `VehiclesController` to include `:destroy`. Added `destroy` action calling `@vehicle.destroy` followed by `redirect_to vehicles_path, notice: "Vehicle deleted successfully."`. Wrong-user access automatically triggers `RecordNotFound` → root redirect via existing `ApplicationController` rescue — no custom authorization needed. Added "Delete" button to `_vehicle_card` using `data: { turbo_method: :delete, turbo_confirm: ... }` Turbo pattern. Appended 3 request specs to existing `vehicles_spec.rb` covering all ACs. Full suite: 64 examples, 0 failures.
+
 ### File List
+
+- `app/controllers/vehicles_controller.rb` (modified — extended `before_action :set_vehicle` to include `:destroy`; added `destroy` action)
+- `app/views/shared/_vehicle_card.html.erb` (modified — added "Delete" link with Turbo method override)
+- `spec/requests/vehicles_spec.rb` (modified — appended 3 DELETE specs)
+
+## Change Log
+
+- 2026-04-27: Story 2.3 created — Delete Vehicle context prepared for development.
+- 2026-04-27: Story 2.3 implemented — VehiclesController destroy action, vehicle card Delete button, 3 new request specs. 64 examples, 0 failures.
