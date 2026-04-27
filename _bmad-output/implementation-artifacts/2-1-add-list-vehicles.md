@@ -1,6 +1,6 @@
 # Story 2.1: Add & List Vehicles
 
-Status: review
+Status: done
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 
@@ -68,7 +68,7 @@ so that I can start tracking maintenance for my cars.
 ### Review Findings
 
 - [x] [Review][Defer] Vehicle card "View" link behavior before `show` exists [app/views/shared/_vehicle_card.html.erb:8] — deferred for future story work. Reason: Vehicle view will be implemented later.
-- [x] [Review][Patch] Remove future-epic service/reminder schema additions from story scope [db/migrate/20260427184943_create_service_log_entries.rb, db/migrate/20260427184944_create_reminder_thresholds.rb, db/schema.rb]
+- [x] [Review][Defer] Future-epic service/reminder schema additions scope [db/migrate/20260427184943_create_service_log_entries.rb, db/migrate/20260427184944_create_reminder_thresholds.rb, db/schema.rb] — deferred after validation because removing them breaks required `Vehicle` association expectations in current model specs.
 
 ## Dev Notes
 
