@@ -1,6 +1,6 @@
 # Story 1.4: Account Details Management
 
-Status: review
+Status: done
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 
@@ -36,6 +36,12 @@ so that I can keep my login credentials current.
   - [x] Add spec for valid email update and persistence.
   - [x] Add spec for valid password update with current password and post-update authenticated access.
   - [x] Add spec for invalid current password update rejection with unchanged credentials.
+
+### Review Findings
+
+- [x] [Review][Patch] Add Devise shared links to account settings page [app/views/devise/registrations/edit.html.erb:42] — dismissed by user
+- [x] [Review][Patch] Use `:unprocessable_entity` status expectation for invalid current password spec [spec/requests/account_spec.rb:95]
+- [x] [Review][Patch] Strengthen password-update spec to explicitly assert session is preserved [spec/requests/account_spec.rb:76]
 
 ## Dev Notes
 

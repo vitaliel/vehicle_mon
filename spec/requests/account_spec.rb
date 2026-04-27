@@ -79,6 +79,8 @@ RSpec.describe "Account", type: :request do
 
         # User should still be signed in (root is protected)
         expect(response).to have_http_status(:ok)
+        get edit_user_registration_path
+        expect(response).to have_http_status(:ok)
       end
     end
 
@@ -92,7 +94,7 @@ RSpec.describe "Account", type: :request do
           }
         }
 
-        expect(response).to have_http_status(:unprocessable_content)
+        expect(response).to have_http_status(:unprocessable_entity)
         expect(response.body).to match(/current password/i)
 
         # Password should not have changed
