@@ -25,6 +25,15 @@
   </head>
 
   <body>
+    <nav class="navbar navbar-light bg-light px-3 mb-3">
+      <span class="navbar-brand mb-0 h1">Vehicle Tracker</span>
+      <% if user_signed_in? %>
+        <%= link_to "Sign out", destroy_user_session_path,
+              data: { turbo_method: :delete },
+              class: "btn btn-outline-secondary btn-sm" %>
+      <% end %>
+    </nav>
+
     <div class="container-fluid">
       <%= render 'shared/flash_messages' %>
 
