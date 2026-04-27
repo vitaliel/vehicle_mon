@@ -99,4 +99,78 @@ RSpec.describe "Vehicles", type: :request do
       end
     end
   end
+
+  describe "GET /vehicles/:id/edit" do
+    context "when unauthenticated" do
+      it "redirects to sign-in" do
+        vehicle = create(:vehicle)
+        get edit_vehicle_path(vehicle)
+        expect(response).to redirect_to(new_user_session_path)
+      end
+    end
+
+    context "when authenticated" do
+      before { sign_in user }
+
+      it "returns 200 for own vehicle" do
+        vehicle = create(:vehicle, user: user)
+        get edit_vehicle_path(vehicle)
+        expect(response).to have_http_status(:ok)
+      end
+
+      it "redirects to root for another user's vehicle" do
+        other_vehicle = create(:vehicle, user: other_user)
+        get edit_vehicle_path(other_vehicle)
+        expect(response).to redirect_to(root_path)
+      end
+
+      it "redirects to root for a non-existent vehicle" do
+        get edit_vehicle_path(-1)
+        expect(response).to redirect_to(root_path)
+      end
+    end
+  end
+
+  describe "PATCH /vehicles/:id" do
+    context "when unauthenticated" do
+      it "redirects to sign-in" do
+        vehicle = create(:vehicle)
+        patch vehicle_path(vehicle), params: { vehicle: { make: "Honda" } }
+        expect(response).to redirect_to(new_user_session_path)
+      end
+    end
+
+    context "when authenticated" do
+      let(:vehicle) { create(:vehicle, user: user, make: "Toyota", model: "Camry", year: 2020, current_mileage: 45_000) }
+
+      before { sign_in user }
+
+      it "updates vehicle and redirects to vehicles_path with flash[:notice]" do
+        patch vehicle_path(vehicle), params: { vehicle: { make: "Honda" } }
+        expect(response).to redirect_to(vehicles_path)
+        follow_redirect!
+        expect(response.body).to include("Vehicle updated successfully")
+        expect(vehicle.reload.make).to eq("Honda")
+      end
+
+      it "re-renders edit with status 422 on invalid params" do
+        patch vehicle_path(vehicle), params: { vehicle: { make: "" } }
+        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response.body).to include("can&#39;t be blank")
+      end
+
+      it "redirects to root for another user's vehicle" do
+        other_vehicle = create(:vehicle, user: other_user)
+        original_make = other_vehicle.make
+        patch vehicle_path(other_vehicle), params: { vehicle: { make: "Honda" } }
+        expect(response).to redirect_to(root_path)
+        expect(other_vehicle.reload.make).to eq(original_make)
+      end
+
+      it "redirects to root for a non-existent vehicle" do
+        patch vehicle_path(-1), params: { vehicle: { make: "Honda" } }
+        expect(response).to redirect_to(root_path)
+      end
+    end
+  end
 end
