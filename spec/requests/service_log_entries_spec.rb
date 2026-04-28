@@ -204,6 +204,8 @@ RSpec.describe "ServiceLogEntries", type: :request do
         get edit_vehicle_service_log_entry_path(vehicle, entry)
         expect(response).to have_http_status(:ok)
         expect(response.body).to include(entry.service_center)
+        expect(response.body).to include(entry.mileage_at_service.to_s)
+        expect(response.body).to include(entry.serviced_on.to_s)
       end
 
       it "redirects to root when accessing another user's entry" do
@@ -253,10 +255,11 @@ RSpec.describe "ServiceLogEntries", type: :request do
     context "when authenticated with invalid params (blank serviced_on)" do
       before { sign_in user }
 
-      it "re-renders edit with status 422" do
+      it "re-renders edit with status 422 and shows validation error" do
         patch vehicle_service_log_entry_path(vehicle, entry),
               params: { service_log_entry: { serviced_on: "" } }
         expect(response).to have_http_status(:unprocessable_entity)
+        expect(response.body).to include("error_explanation")
       end
     end
 

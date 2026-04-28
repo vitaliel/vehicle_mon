@@ -1,6 +1,6 @@
 # Story 3.4: Edit Service Log Entry
 
-Status: review
+Status: done
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 
@@ -304,6 +304,13 @@ end
 - Auth enforcement: `app/controllers/application_controller.rb`
 - Routes: `config/routes.rb`
 - Vehicles controller (edit/update pattern reference): `app/controllers/vehicles_controller.rb`
+
+### Review Findings
+
+- [x] [Review][Patch] Test verifies only one pre-filled field (`service_center`) for AC#1 — spec says "check key field values appear in body" [spec/requests/service_log_entries_spec.rb]
+- [x] [Review][Patch] Invalid-params test does not assert error message appears in body for AC#3 — only checks `status: 422`, not that a validation error is rendered [spec/requests/service_log_entries_spec.rb]
+- [x] [Review][Defer] No optimistic locking on concurrent edits [app/controllers/service_log_entries_controller.rb] — deferred, pre-existing
+- [x] [Review][Defer] `mileage_at_service` blank submission coerced to nil (model has numericality but no presence validator) [app/models/service_log_entry.rb] — deferred, pre-existing
 
 ## Dev Agent Record
 
