@@ -23,14 +23,46 @@ RSpec.describe "ServiceLogEntries", type: :request do
         expect(response.body).to include("Log your first service entry")
       end
 
-      it "lists existing entries in chronological order" do
+      it "lists existing entries in chronological order (oldest first)" do
         create(:service_log_entry, vehicle: vehicle, service_type: service_type,
-               serviced_on: 1.month.ago, mileage_at_service: 40_000)
+               serviced_on: Date.new(2025, 1, 1), mileage_at_service: 90_000)
         create(:service_log_entry, vehicle: vehicle, service_type: service_type,
-               serviced_on: Date.today, mileage_at_service: 50_000)
+               serviced_on: Date.new(2025, 6, 1), mileage_at_service: 10_000)
         get vehicle_service_log_entries_path(vehicle)
         expect(response).to have_http_status(:ok)
         expect(response.body).to include(service_type.name)
+        expect(response.body.index("01 Jan 2025")).to be < response.body.index("01 Jun 2025")
+      end
+
+      it "displays date formatted as DD Mon YYYY" do
+        create(:service_log_entry, vehicle: vehicle, service_type: service_type,
+               serviced_on: Date.new(2025, 4, 23), mileage_at_service: 45_000)
+        get vehicle_service_log_entries_path(vehicle)
+        expect(response.body).to include("23 Apr 2025")
+      end
+
+      it "displays mileage with delimiter and km suffix" do
+        create(:service_log_entry, vehicle: vehicle, service_type: service_type,
+               serviced_on: Date.today, mileage_at_service: 92_400)
+        get vehicle_service_log_entries_path(vehicle)
+        expect(response.body).to include("92,400 km")
+      end
+
+      it "displays costs formatted as currency" do
+        create(:service_log_entry, vehicle: vehicle, service_type: service_type,
+               serviced_on: Date.today, mileage_at_service: 10_000,
+               parts_cost: 25.50, labour_cost: 80.00)
+        get vehicle_service_log_entries_path(vehicle)
+        expect(response.body).to include(ActionController::Base.helpers.number_to_currency(25.50))
+        expect(response.body).to include(ActionController::Base.helpers.number_to_currency(80.00))
+      end
+
+      it "displays notes text" do
+        create(:service_log_entry, vehicle: vehicle, service_type: service_type,
+               serviced_on: Date.today, mileage_at_service: 10_000,
+               notes: "Replaced cabin air filter")
+        get vehicle_service_log_entries_path(vehicle)
+        expect(response.body).to include("Replaced cabin air filter")
       end
 
       it "redirects to root when accessing another user's vehicle" do
