@@ -1,0 +1,6 @@
+<div class="container py-4">
+  <h1 class="mb-4">Edit Service Entry</h1>
+  <h5 class="text-muted mb-4"><%= @vehicle.year %> <%= @vehicle.make %> <%= @vehicle.model %></h5>
+
+  <%= render 'form', vehicle: @vehicle, entry: @entry %>
+</div>
