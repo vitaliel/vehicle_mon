@@ -267,6 +267,12 @@ RSpec.describe "Vehicles", type: :request do
         expect(vehicle.reload.current_mileage).to eq(50_000)
       end
 
+      it "rejects a non-numeric mileage and returns 422" do
+        patch update_mileage_vehicle_path(vehicle), params: { vehicle: { current_mileage: "abc" } }
+        expect(response).to have_http_status(:unprocessable_entity)
+        expect(vehicle.reload.current_mileage).to eq(50_000)
+      end
+
       it "redirects to root for another user's vehicle" do
         other_vehicle = create(:vehicle, user: other_user)
         patch update_mileage_vehicle_path(other_vehicle), params: { vehicle: { current_mileage: 60_000 } }
