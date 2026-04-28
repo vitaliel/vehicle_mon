@@ -1,6 +1,6 @@
 # Story 3.5: Delete Service Log Entry
 
-Status: ready-for-dev
+Status: review
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 
@@ -18,20 +18,20 @@ so that I can remove incorrectly logged records.
 
 ## Tasks / Subtasks
 
-- [ ] Task 1: Add `:destroy` to routes (AC: #1, #2)
-  - [ ] In `config/routes.rb`, change `only: [:index, :new, :create, :edit, :update]` to include `:destroy`
+- [x] Task 1: Add `:destroy` to routes (AC: #1, #2)
+  - [x] In `config/routes.rb`, change `only: [:index, :new, :create, :edit, :update]` to include `:destroy`
 
-- [ ] Task 2: Add `destroy` action and `set_entry` before_action extension to `ServiceLogEntriesController` (AC: #1, #2)
-  - [ ] Extend `before_action :set_entry, only: [:edit, :update]` to include `:destroy`
-  - [ ] Add `destroy` action: call `@entry.destroy`, then `redirect_to vehicle_service_log_entries_path(@vehicle), notice: "Service entry deleted successfully."`
+- [x] Task 2: Add `destroy` action and `set_entry` before_action extension to `ServiceLogEntriesController` (AC: #1, #2)
+  - [x] Extend `before_action :set_entry, only: [:edit, :update]` to include `:destroy`
+  - [x] Add `destroy` action: call `@entry.destroy`, then `redirect_to vehicle_service_log_entries_path(@vehicle), notice: "Service entry deleted successfully."`
 
-- [ ] Task 3: Add "Delete" button in the service history index table (AC: #1)
-  - [ ] In `app/views/service_log_entries/index.html.erb`, add a `button_to "Delete"` in the Actions `<td>` alongside the existing "Edit" link, using `method: :delete` and a `data-turbo-confirm` prompt
+- [x] Task 3: Add "Delete" button in the service history index table (AC: #1)
+  - [x] In `app/views/service_log_entries/index.html.erb`, add a `button_to "Delete"` in the Actions `<td>` alongside the existing "Edit" link, using `method: :delete` and a `data-turbo-confirm` prompt
 
-- [ ] Task 4: Write request specs (AC: #1, #2)
-  - [ ] `DELETE /vehicles/:vehicle_id/service_log_entries/:id` unauthenticated — redirects to sign-in
-  - [ ] `DELETE` authenticated as owner — destroys entry, redirects to index with `flash[:notice]`
-  - [ ] `DELETE` with another user's entry — redirects to root with `flash[:alert]`
+- [x] Task 4: Write request specs (AC: #1, #2)
+  - [x] `DELETE /vehicles/:vehicle_id/service_log_entries/:id` unauthenticated — redirects to sign-in
+  - [x] `DELETE` authenticated as owner — destroys entry, redirects to index with `flash[:notice]`
+  - [x] `DELETE` with another user's entry — redirects to root with `flash[:alert]`
 
 ## Dev Notes
 
@@ -181,6 +181,22 @@ claude-sonnet-4.6
 
 ### Debug Log References
 
+- No unexpected issues. Routes had explicit `only:` list as anticipated — added `:destroy` as documented.
+
 ### Completion Notes List
 
+- Added `:destroy` to `service_log_entries` route `only:` list in `config/routes.rb`.
+- Extended `before_action :set_entry` to include `:destroy` in `ServiceLogEntriesController`; cross-user protection is automatic via double-scoped ownership chain.
+- Added `destroy` action: `@entry.destroy` + redirect to index with `flash[:notice]: "Service entry deleted successfully."`.
+- Added `button_to "Delete"` with `method: :delete` and `data: { turbo_confirm: ... }` in the Actions cell of `index.html.erb`, alongside existing Edit link.
+- Added 3 new request specs (unauthenticated redirect, owner delete with count assertion, cross-user redirect) to existing `spec/requests/service_log_entries_spec.rb`.
+- **117 specs pass, 0 failures**, 2 pre-existing pending stubs unchanged.
+
 ### File List
+
+- `config/routes.rb` (modified — added :destroy to service_log_entries)
+- `app/controllers/service_log_entries_controller.rb` (modified — extended set_entry, added destroy action)
+- `app/views/service_log_entries/index.html.erb` (modified — added Delete button in Actions column)
+- `spec/requests/service_log_entries_spec.rb` (modified — added DELETE describe block with 3 specs)
+- `_bmad-output/implementation-artifacts/3-5-delete-service-log-entry.md` (story updated)
+- `_bmad-output/implementation-artifacts/sprint-status.yaml` (updated)

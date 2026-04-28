@@ -2,7 +2,7 @@ Rails.application.routes.draw do
   devise_for :users
 
   resources :vehicles do
-    resources :service_log_entries, only: [ :index, :new, :create, :edit, :update ]
+    resources :service_log_entries, only: [ :index, :new, :create, :edit, :update, :destroy ]
     resources :reminder_thresholds
     member do
       patch :update_mileage
