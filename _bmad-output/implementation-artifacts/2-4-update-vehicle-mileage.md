@@ -1,6 +1,6 @@
 # Story 2.4: Update Vehicle Mileage
 
-Status: ready-for-dev
+Status: review
 
 ## Story
 
@@ -16,20 +16,20 @@ so that the app always reflects the vehicle's real odometer reading.
 
 ## Tasks / Subtasks
 
-- [ ] Task 1: Add `show` and `update_mileage` actions to VehiclesController (AC: #1, #2, #3)
-  - [ ] Extend `before_action :set_vehicle` to include `:show` and `:update_mileage`.
-  - [ ] Add `show` action (empty — `@vehicle` already set by `set_vehicle`).
-  - [ ] Add `update_mileage` action: attempt `@vehicle.update(mileage_params)`, on success redirect to `vehicle_path(@vehicle)` with `flash[:notice]`, on failure re-render `show` with `status: :unprocessable_entity`.
-  - [ ] Add private `mileage_params` method: `params.require(:vehicle).permit(:current_mileage)`.
+- [x] Task 1: Add `show` and `update_mileage` actions to VehiclesController (AC: #1, #2, #3)
+  - [x] Extend `before_action :set_vehicle` to include `:show` and `:update_mileage`.
+  - [x] Add `show` action (empty — `@vehicle` already set by `set_vehicle`).
+  - [x] Add `update_mileage` action: attempt `@vehicle.update(mileage_params)`, on success redirect to `vehicle_path(@vehicle)` with `flash[:notice]`, on failure re-render `show` with `status: :unprocessable_entity`.
+  - [x] Add private `mileage_params` method: `params.require(:vehicle).permit(:current_mileage)`.
 
-- [ ] Task 2: Create `app/views/vehicles/show.html.erb` (AC: #1, #2)
-  - [ ] Display vehicle details: year, make, model, current mileage (formatted with `number_with_delimiter`).
-  - [ ] Include a mileage update form using `form_with(url: update_mileage_vehicle_path(@vehicle), method: :patch)` — do NOT use `model: @vehicle` (that would route to `vehicles#update`).
-  - [ ] Show validation errors using `render 'devise/shared/error_messages', resource: @vehicle` inside the form.
-  - [ ] Include a "Back" link to `vehicles_path`.
+- [x] Task 2: Create `app/views/vehicles/show.html.erb` (AC: #1, #2)
+  - [x] Display vehicle details: year, make, model, current mileage (formatted with `number_with_delimiter`).
+  - [x] Include a mileage update form using `form_with(url: update_mileage_vehicle_path(@vehicle), method: :patch)` — do NOT use `model: @vehicle` (that would route to `vehicles#update`).
+  - [x] Show validation errors using `render 'devise/shared/error_messages', resource: @vehicle` inside the form.
+  - [x] Include a "Back" link to `vehicles_path`.
 
-- [ ] Task 3: Add request specs for `show` and `update_mileage` (AC: #1–#3)
-  - [ ] Add to `spec/requests/vehicles_spec.rb` (do NOT create a new file):
+- [x] Task 3: Add request specs for `show` and `update_mileage` (AC: #1–#3)
+  - [x] Add to `spec/requests/vehicles_spec.rb` (do NOT create a new file):
     - `GET /vehicles/:id` — unauthenticated → redirects to sign-in.
     - `GET /vehicles/:id` — authenticated, own vehicle → 200 OK.
     - `GET /vehicles/:id` — authenticated, other user's vehicle → redirects to root.
@@ -253,8 +253,15 @@ claude-sonnet-4.6
 
 ### Completion Notes List
 
+- Story 2.4 implemented. Extended `before_action :set_vehicle` in `VehiclesController` to include `:show` and `:update_mileage`. Added empty `show` action (view handles display). Added `update_mileage` action that updates only `current_mileage` via `mileage_params`, redirecting to `vehicle_path` on success or re-rendering `show` with 422 on failure. Added private `mileage_params` method. Created `app/views/vehicles/show.html.erb` with vehicle details, mileage update form using explicit `url: update_mileage_vehicle_path`, validation error partial, and back link. Appended 7 request specs to existing `spec/requests/vehicles_spec.rb` covering all ACs. Full suite: 71 examples, 0 failures.
+
 ### File List
+
+- `app/controllers/vehicles_controller.rb` (modified — extended `before_action :set_vehicle` to include `:show, :update_mileage`; added `show` and `update_mileage` actions; added `mileage_params` private method)
+- `app/views/vehicles/show.html.erb` (created — vehicle detail page with mileage update form)
+- `spec/requests/vehicles_spec.rb` (modified — appended 7 specs for GET show × 3 and PATCH update_mileage × 4)
 
 ## Change Log
 
 - 2026-04-28: Story 2.4 created — Update Vehicle Mileage context prepared for development.
+- 2026-04-28: Story 2.4 implemented — VehiclesController show + update_mileage actions, show.html.erb, 7 new request specs. 71 examples, 0 failures.

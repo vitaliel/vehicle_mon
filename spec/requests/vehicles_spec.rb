@@ -212,4 +212,66 @@ RSpec.describe "Vehicles", type: :request do
       end
     end
   end
+
+  describe "GET /vehicles/:id" do
+    context "when unauthenticated" do
+      it "redirects to sign-in" do
+        vehicle = create(:vehicle)
+        get vehicle_path(vehicle)
+        expect(response).to redirect_to(new_user_session_path)
+      end
+    end
+
+    context "when authenticated" do
+      before { sign_in user }
+
+      it "shows own vehicle detail page" do
+        vehicle = create(:vehicle, user: user)
+        get vehicle_path(vehicle)
+        expect(response).to have_http_status(:ok)
+      end
+
+      it "redirects to root for another user's vehicle" do
+        other_vehicle = create(:vehicle, user: other_user)
+        get vehicle_path(other_vehicle)
+        expect(response).to redirect_to(root_path)
+      end
+    end
+  end
+
+  describe "PATCH /vehicles/:id/update_mileage" do
+    context "when unauthenticated" do
+      it "redirects to sign-in" do
+        vehicle = create(:vehicle)
+        patch update_mileage_vehicle_path(vehicle), params: { vehicle: { current_mileage: 60_000 } }
+        expect(response).to redirect_to(new_user_session_path)
+      end
+    end
+
+    context "when authenticated" do
+      let(:vehicle) { create(:vehicle, user: user, current_mileage: 50_000) }
+
+      before { sign_in user }
+
+      it "updates mileage and redirects to vehicle_path with flash[:notice]" do
+        patch update_mileage_vehicle_path(vehicle), params: { vehicle: { current_mileage: 60_000 } }
+        expect(vehicle.reload.current_mileage).to eq(60_000)
+        expect(response).to redirect_to(vehicle_path(vehicle))
+        follow_redirect!
+        expect(response.body).to include("Mileage updated successfully")
+      end
+
+      it "rejects a negative mileage and returns 422" do
+        patch update_mileage_vehicle_path(vehicle), params: { vehicle: { current_mileage: -1 } }
+        expect(response).to have_http_status(:unprocessable_entity)
+        expect(vehicle.reload.current_mileage).to eq(50_000)
+      end
+
+      it "redirects to root for another user's vehicle" do
+        other_vehicle = create(:vehicle, user: other_user)
+        patch update_mileage_vehicle_path(other_vehicle), params: { vehicle: { current_mileage: 60_000 } }
+        expect(response).to redirect_to(root_path)
+      end
+    end
+  end
 end
