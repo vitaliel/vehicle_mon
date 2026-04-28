@@ -1,6 +1,6 @@
 # Story 3.3: View Service History
 
-Status: review
+Status: done
 
 ## Story
 
@@ -34,6 +34,13 @@ so that I can review the full maintenance history at a glance.
   - [x] Add spec verifying field display: formatted date string (e.g. "01 Jan 2025"), delimited mileage, currency-formatted costs, notes text
   - [x] Add spec verifying vehicle show page contains link to service history (GET /vehicles/:id includes link text "Service History" or similar)
   - [x] Cross-user redirect spec already exists — confirm it covers 5th AC (no new spec needed)
+
+### Review Findings
+
+- [x] [Review][Patch] Chronological-order spec can pass with wrong sort key [spec/requests/service_log_entries_spec.rb:26]
+- [x] [Review][Patch] Mileage-format spec does not verify the required " km" suffix [spec/requests/service_log_entries_spec.rb:45]
+- [x] [Review][Patch] Currency-format spec only checks numeric substrings, not currency rendering [spec/requests/service_log_entries_spec.rb:52]
+- [x] [Review][Patch] Vehicle detail spec does not assert a visible service-history link [spec/requests/vehicles_spec.rb:234]
 
 ## Dev Notes
 

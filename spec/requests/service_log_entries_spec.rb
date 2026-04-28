@@ -24,15 +24,14 @@ RSpec.describe "ServiceLogEntries", type: :request do
       end
 
       it "lists existing entries in chronological order (oldest first)" do
-        old_entry = create(:service_log_entry, vehicle: vehicle, service_type: service_type,
-               serviced_on: Date.new(2025, 1, 1), mileage_at_service: 40_000)
-        new_entry = create(:service_log_entry, vehicle: vehicle, service_type: service_type,
-               serviced_on: Date.new(2025, 6, 1), mileage_at_service: 50_000)
+        create(:service_log_entry, vehicle: vehicle, service_type: service_type,
+               serviced_on: Date.new(2025, 1, 1), mileage_at_service: 90_000)
+        create(:service_log_entry, vehicle: vehicle, service_type: service_type,
+               serviced_on: Date.new(2025, 6, 1), mileage_at_service: 10_000)
         get vehicle_service_log_entries_path(vehicle)
         expect(response).to have_http_status(:ok)
         expect(response.body).to include(service_type.name)
-        # Older mileage appears before newer mileage in HTML
-        expect(response.body.index("40,000")).to be < response.body.index("50,000")
+        expect(response.body.index("01 Jan 2025")).to be < response.body.index("01 Jun 2025")
       end
 
       it "displays date formatted as DD Mon YYYY" do
@@ -46,7 +45,7 @@ RSpec.describe "ServiceLogEntries", type: :request do
         create(:service_log_entry, vehicle: vehicle, service_type: service_type,
                serviced_on: Date.today, mileage_at_service: 92_400)
         get vehicle_service_log_entries_path(vehicle)
-        expect(response.body).to include("92,400")
+        expect(response.body).to include("92,400 km")
       end
 
       it "displays costs formatted as currency" do
@@ -54,8 +53,8 @@ RSpec.describe "ServiceLogEntries", type: :request do
                serviced_on: Date.today, mileage_at_service: 10_000,
                parts_cost: 25.50, labour_cost: 80.00)
         get vehicle_service_log_entries_path(vehicle)
-        expect(response.body).to include("25.50")
-        expect(response.body).to include("80.00")
+        expect(response.body).to include(ActionController::Base.helpers.number_to_currency(25.50))
+        expect(response.body).to include(ActionController::Base.helpers.number_to_currency(80.00))
       end
 
       it "displays notes text" do

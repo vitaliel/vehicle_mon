@@ -235,7 +235,8 @@ RSpec.describe "Vehicles", type: :request do
         vehicle = create(:vehicle, user: user)
         get vehicle_path(vehicle)
         expect(response).to have_http_status(:ok)
-        expect(response.body).to include(vehicle_service_log_entries_path(vehicle))
+        expect(response.body).to include("View Service History")
+        expect(response.body).to include(%(href="#{vehicle_service_log_entries_path(vehicle)}"))
       end
 
       it "redirects to root for another user's vehicle" do
