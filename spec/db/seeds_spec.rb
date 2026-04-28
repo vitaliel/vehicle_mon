@@ -30,4 +30,17 @@ RSpec.describe 'db/seeds.rb', type: :model do
     load seed_file
     expect(ServiceType.count).to eq(6)
   end
+
+  it 'normalizes case variants and removes non-canonical records' do
+    now = Time.current
+    ServiceType.insert_all!([
+      { name: 'engine oil', created_at: now, updated_at: now },
+      { name: 'Coolant', created_at: now, updated_at: now }
+    ])
+
+    load seed_file
+
+    expect(ServiceType.count).to eq(6)
+    expect(ServiceType.pluck(:name).sort).to match_array(canonical_names)
+  end
 end

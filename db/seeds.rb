@@ -9,13 +9,25 @@
 #   end
 
 # Service Type catalog — global, non-user-owned seed data
-[
+canonical_service_types = [
   "Engine Oil",
   "Spark Plugs",
   "Air Filter",
   "Brake Pads",
   "Transmission Fluid",
   "Tires"
-].each do |name|
-  ServiceType.find_or_create_by!(name: name)
+]
+
+ServiceType.select("LOWER(name) AS normalized_name, MIN(id) AS keep_id").group("LOWER(name)").each do |row|
+  normalized_name = row.attributes["normalized_name"]
+  keep_id = row.attributes["keep_id"]
+  ServiceType.where("LOWER(name) = ? AND id != ?", normalized_name, keep_id).delete_all
 end
+
+canonical_service_types.each do |name|
+  service_type = ServiceType.where("LOWER(name) = ?", name.downcase).first_or_initialize
+  service_type.name = name
+  service_type.save! if service_type.new_record? || service_type.changed?
+end
+
+ServiceType.where.not("LOWER(name) IN (?)", canonical_service_types.map(&:downcase)).delete_all

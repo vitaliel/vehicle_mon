@@ -1,6 +1,6 @@
 # Story 3.1: Service Type Catalog Seed
 
-Status: review
+Status: done
 
 ## Story
 
@@ -32,6 +32,12 @@ so that users can select service types when logging entries without any configur
   - [x] Add a seed-focused spec (or equivalent test coverage pattern already used in repo) that verifies:
     - first seed run creates exactly 6 `ServiceType` records;
     - second seed run keeps count at 6 (no duplicates).
+
+### Review Findings
+
+- [x] [Review][Patch] Case-insensitive uniqueness mismatch between model validation and DB index [db/migrate/20260428110124_create_service_types.rb:8]
+- [x] [Review][Patch] Seed can fail when pre-existing service type names differ only by letter case [db/seeds.rb:15]
+- [x] [Review][Patch] Seed does not enforce total catalog size of exactly six records when extras already exist [db/seeds.rb:11]
 
 ## Dev Notes
 

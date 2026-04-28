@@ -5,6 +5,6 @@ class CreateServiceTypes < ActiveRecord::Migration[8.1]
 
       t.timestamps
     end
-    add_index :service_types, :name, unique: true
+    add_index :service_types, "LOWER(name)", unique: true, name: "index_service_types_on_lower_name"
   end
 end
