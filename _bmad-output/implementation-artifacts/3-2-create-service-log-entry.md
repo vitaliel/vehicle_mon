@@ -1,6 +1,6 @@
 # Story 3.2: Create Service Log Entry
 
-Status: review
+Status: done
 
 ## Story
 
@@ -45,6 +45,14 @@ so that I have a permanent record of every maintenance event.
 - [x] Task 5: Create factory and request specs (AC: all)
   - [x] `spec/factories/service_log_entries.rb` — factory with all required fields, association to vehicle and service_type.
   - [x] `spec/requests/service_log_entries_spec.rb` — cover: unauthenticated redirect, cross-user redirect (AC#4), GET new returns 200, POST create valid → redirect + notice, POST create missing required field → 422, entry is scoped to vehicle.
+
+### Review Findings
+
+- [x] [Review][Patch] Add an automated performance assertion for AC #2 save-path latency target [spec/requests/service_log_entries_spec.rb]
+
+- [x] [Review][Patch] Controller/routes expose unsupported REST actions and can raise MissingTemplate [app/controllers/service_log_entries_controller.rb:24]
+- [x] [Review][Patch] Migration is unsafe if legacy `service_log_entries` rows exist before adding non-null fields [db/migrate/20260428121823_add_columns_to_service_log_entries.rb:3]
+- [x] [Review][Patch] Case-insensitive uniqueness index for `service_types.name` regressed in schema diff [db/schema.rb:44]
 
 ## Dev Notes
 

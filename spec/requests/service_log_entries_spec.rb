@@ -113,6 +113,14 @@ RSpec.describe "ServiceLogEntries", type: :request do
         post vehicle_service_log_entries_path(vehicle), params: valid_params
         expect(ServiceLogEntry.last.vehicle).to eq(vehicle)
       end
+
+      it "completes create in under 500ms" do
+        started_at = Process.clock_gettime(Process::CLOCK_MONOTONIC)
+        post vehicle_service_log_entries_path(vehicle), params: valid_params
+        elapsed_ms = (Process.clock_gettime(Process::CLOCK_MONOTONIC) - started_at) * 1000
+
+        expect(elapsed_ms).to be < 500
+      end
     end
 
     context "when authenticated with missing required field (date)" do
