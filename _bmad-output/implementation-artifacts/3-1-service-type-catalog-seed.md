@@ -1,6 +1,6 @@
 # Story 3.1: Service Type Catalog Seed
 
-Status: ready-for-dev
+Status: review
 
 ## Story
 
@@ -15,21 +15,21 @@ so that users can select service types when logging entries without any configur
 
 ## Tasks / Subtasks
 
-- [ ] Task 1: Add global `ServiceType` persistence model and schema (AC: #2)
-  - [ ] Create migration `db/migrate/*_create_service_types.rb` with `service_types` table and `name` column (`null: false`).
-  - [ ] Add a unique DB index on `service_types.name` to prevent duplicates and enforce seed idempotency at persistence level.
-  - [ ] Create `app/models/service_type.rb` with validation for `name` presence and uniqueness.
-  - [ ] Ensure the model is global (no `belongs_to :user`, no `user_id` column).
+- [x] Task 1: Add global `ServiceType` persistence model and schema (AC: #2)
+  - [x] Create migration `db/migrate/*_create_service_types.rb` with `service_types` table and `name` column (`null: false`).
+  - [x] Add a unique DB index on `service_types.name` to prevent duplicates and enforce seed idempotency at persistence level.
+  - [x] Create `app/models/service_type.rb` with validation for `name` presence and uniqueness.
+  - [x] Ensure the model is global (no `belongs_to :user`, no `user_id` column).
 
-- [ ] Task 2: Implement idempotent seed data for the 6 canonical service types (AC: #1)
-  - [ ] Update `db/seeds.rb` to create/find exactly these names: Engine Oil, Spark Plugs, Air Filter, Brake Pads, Transmission Fluid, Tires.
-  - [ ] Use idempotent creation pattern (`find_or_create_by!`) so repeated `db:seed` runs do not create duplicates.
-  - [ ] Keep seed naming and capitalization exactly aligned with acceptance criteria.
+- [x] Task 2: Implement idempotent seed data for the 6 canonical service types (AC: #1)
+  - [x] Update `db/seeds.rb` to create/find exactly these names: Engine Oil, Spark Plugs, Air Filter, Brake Pads, Transmission Fluid, Tires.
+  - [x] Use idempotent creation pattern (`find_or_create_by!`) so repeated `db:seed` runs do not create duplicates.
+  - [x] Keep seed naming and capitalization exactly aligned with acceptance criteria.
 
-- [ ] Task 3: Add coverage for model constraints and seed idempotency (AC: #1, #2)
-  - [ ] Add `spec/models/service_type_spec.rb` for validation coverage (presence and uniqueness of `name`).
-  - [ ] Add/update `spec/factories/service_types.rb` factory for `ServiceType`.
-  - [ ] Add a seed-focused spec (or equivalent test coverage pattern already used in repo) that verifies:
+- [x] Task 3: Add coverage for model constraints and seed idempotency (AC: #1, #2)
+  - [x] Add `spec/models/service_type_spec.rb` for validation coverage (presence and uniqueness of `name`).
+  - [x] Add/update `spec/factories/service_types.rb` factory for `ServiceType`.
+  - [x] Add a seed-focused spec (or equivalent test coverage pattern already used in repo) that verifies:
     - first seed run creates exactly 6 `ServiceType` records;
     - second seed run keeps count at 6 (no duplicates).
 
@@ -77,14 +77,33 @@ Files not to touch in this story:
 
 ### Agent Model Used
 
-GPT-5.3-Codex (gpt-5.3-codex)
+claude-sonnet-4.6
 
 ### Debug Log References
 
+No blockers encountered. Standard Rails migration and model pattern applied.
+
 ### Completion Notes List
 
+- Created `service_types` table migration with `name` column (`null: false`) and unique DB index.
+- Created `ServiceType` model with presence + case-insensitive uniqueness validations; no `user_id` (global catalog).
+- Updated `db/seeds.rb` with idempotent `find_or_create_by!` for all 6 canonical service types.
+- Added `spec/models/service_type_spec.rb` covering presence, uniqueness, and no `user_id` column.
+- Added `spec/factories/service_types.rb` factory.
+- Added `spec/db/seeds_spec.rb` verifying first-run count = 6 and idempotency (second run count stays 6).
+- All 78 specs pass, 0 failures, 0 regressions.
+
 ### File List
+
+- `app/models/service_type.rb` (new)
+- `db/migrate/20260428110124_create_service_types.rb` (new)
+- `db/schema.rb` (updated by migration)
+- `db/seeds.rb` (modified)
+- `spec/models/service_type_spec.rb` (new)
+- `spec/factories/service_types.rb` (new)
+- `spec/db/seeds_spec.rb` (new)
 
 ## Change Log
 
 - 2026-04-28: Story 3.1 created — Service Type Catalog Seed context prepared for development.
+- 2026-04-28: Story 3.1 implemented — ServiceType model, migration, seeds, and tests complete. Status → review.

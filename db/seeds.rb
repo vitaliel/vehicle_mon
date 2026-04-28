@@ -7,3 +7,15 @@
 #   ["Action", "Comedy", "Drama", "Horror"].each do |genre_name|
 #     MovieGenre.find_or_create_by!(name: genre_name)
 #   end
+
+# Service Type catalog — global, non-user-owned seed data
+[
+  "Engine Oil",
+  "Spark Plugs",
+  "Air Filter",
+  "Brake Pads",
+  "Transmission Fluid",
+  "Tires"
+].each do |name|
+  ServiceType.find_or_create_by!(name: name)
+end

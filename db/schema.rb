@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_04_27_184944) do
+ActiveRecord::Schema[8.1].define(version: 2026_04_28_110124) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pg_stat_statements"
@@ -27,6 +27,13 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_27_184944) do
     t.datetime "updated_at", null: false
     t.bigint "vehicle_id", null: false
     t.index ["vehicle_id"], name: "index_service_log_entries_on_vehicle_id"
+  end
+
+  create_table "service_types", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "name", null: false
+    t.datetime "updated_at", null: false
+    t.index ["name"], name: "index_service_types_on_name", unique: true
   end
 
   create_table "users", force: :cascade do |t|
