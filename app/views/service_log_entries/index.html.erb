@@ -19,6 +19,7 @@
             <th>Parts</th>
             <th>Labour</th>
             <th>Notes</th>
+            <th>Actions</th>
           </tr>
         </thead>
         <tbody>
@@ -31,6 +32,10 @@
               <td><%= number_to_currency(entry.parts_cost) %></td>
               <td><%= number_to_currency(entry.labour_cost) %></td>
               <td><%= entry.notes %></td>
+              <td>
+                <%= link_to "Edit", edit_vehicle_service_log_entry_path(@vehicle, entry),
+                      class: "btn btn-sm btn-outline-secondary" %>
+              </td>
             </tr>
           <% end %>
         </tbody>

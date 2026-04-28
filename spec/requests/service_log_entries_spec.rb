@@ -186,4 +186,90 @@ RSpec.describe "ServiceLogEntries", type: :request do
       end
     end
   end
+
+  describe "GET /vehicles/:vehicle_id/service_log_entries/:id/edit" do
+    let(:entry) { create(:service_log_entry, vehicle: vehicle, service_type: service_type) }
+
+    context "when unauthenticated" do
+      it "redirects to sign-in" do
+        get edit_vehicle_service_log_entry_path(vehicle, entry)
+        expect(response).to redirect_to(new_user_session_path)
+      end
+    end
+
+    context "when authenticated as owner" do
+      before { sign_in user }
+
+      it "returns 200 with pre-filled field values" do
+        get edit_vehicle_service_log_entry_path(vehicle, entry)
+        expect(response).to have_http_status(:ok)
+        expect(response.body).to include(entry.service_center)
+      end
+
+      it "redirects to root when accessing another user's entry" do
+        other_vehicle = create(:vehicle, user: other_user)
+        other_entry = create(:service_log_entry, vehicle: other_vehicle, service_type: service_type)
+        get edit_vehicle_service_log_entry_path(other_vehicle, other_entry)
+        expect(response).to redirect_to(root_path)
+        expect(flash[:alert]).to be_present
+      end
+    end
+  end
+
+  describe "PATCH /vehicles/:vehicle_id/service_log_entries/:id" do
+    let(:entry) { create(:service_log_entry, vehicle: vehicle, service_type: service_type) }
+    let(:valid_update) do
+      {
+        service_log_entry: {
+          service_type_id: service_type.id,
+          serviced_on: Date.today,
+          mileage_at_service: 55_000,
+          service_center: "Updated Center",
+          parts_cost: 30.00,
+          labour_cost: 60.00,
+          notes: "Updated notes"
+        }
+      }
+    end
+
+    context "when unauthenticated" do
+      it "redirects to sign-in" do
+        patch vehicle_service_log_entry_path(vehicle, entry), params: valid_update
+        expect(response).to redirect_to(new_user_session_path)
+      end
+    end
+
+    context "when authenticated with valid params" do
+      before { sign_in user }
+
+      it "updates the entry and redirects to index with flash[:notice]" do
+        patch vehicle_service_log_entry_path(vehicle, entry), params: valid_update
+        expect(response).to redirect_to(vehicle_service_log_entries_path(vehicle))
+        expect(flash[:notice]).to eq("Service entry updated successfully.")
+        expect(entry.reload.service_center).to eq("Updated Center")
+      end
+    end
+
+    context "when authenticated with invalid params (blank serviced_on)" do
+      before { sign_in user }
+
+      it "re-renders edit with status 422" do
+        patch vehicle_service_log_entry_path(vehicle, entry),
+              params: { service_log_entry: { serviced_on: "" } }
+        expect(response).to have_http_status(:unprocessable_entity)
+      end
+    end
+
+    context "when accessing another user's entry (cross-user)" do
+      before { sign_in user }
+
+      it "redirects to root with flash[:alert]" do
+        other_vehicle = create(:vehicle, user: other_user)
+        other_entry = create(:service_log_entry, vehicle: other_vehicle, service_type: service_type)
+        patch vehicle_service_log_entry_path(other_vehicle, other_entry), params: valid_update
+        expect(response).to redirect_to(root_path)
+        expect(flash[:alert]).to be_present
+      end
+    end
+  end
 end

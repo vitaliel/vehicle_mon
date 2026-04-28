@@ -1,6 +1,6 @@
 # Story 3.4: Edit Service Log Entry
 
-Status: ready-for-dev
+Status: review
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 
@@ -22,22 +22,22 @@ so that I can correct mistakes after saving.
 
 ## Tasks / Subtasks
 
-- [ ] Task 1: Add `edit` and `update` actions to `ServiceLogEntriesController` (AC: #1, #2, #3, #4)
-  - [ ] Add `before_action :set_entry, only: [:edit, :update]` using `@vehicle.service_log_entries.find(params[:id])`
-  - [ ] Add `edit` action (no body needed — just `set_entry` loads `@entry`; populate `@service_types`)
-  - [ ] Add `update` action: on success redirect to `vehicle_service_log_entries_path(@vehicle)` with `notice:`; on failure render `:edit` with `status: :unprocessable_entity` and reload `@service_types`
+- [x] Task 1: Add `edit` and `update` actions to `ServiceLogEntriesController` (AC: #1, #2, #3, #4)
+  - [x] Add `before_action :set_entry, only: [:edit, :update]` using `@vehicle.service_log_entries.find(params[:id])`
+  - [x] Add `edit` action (no body needed — just `set_entry` loads `@entry`; populate `@service_types`)
+  - [x] Add `update` action: on success redirect to `vehicle_service_log_entries_path(@vehicle)` with `notice:`; on failure render `:edit` with `status: :unprocessable_entity` and reload `@service_types`
 
-- [ ] Task 2: Create `app/views/service_log_entries/edit.html.erb` (AC: #1)
-  - [ ] Mirror `new.html.erb` structure: container, heading "Edit Service Entry", vehicle sub-heading, render `'form'` partial with `vehicle: @vehicle, entry: @entry`
+- [x] Task 2: Create `app/views/service_log_entries/edit.html.erb` (AC: #1)
+  - [x] Mirror `new.html.erb` structure: container, heading "Edit Service Entry", vehicle sub-heading, render `'form'` partial with `vehicle: @vehicle, entry: @entry`
 
-- [ ] Task 3: Add "Edit" link in the service history index table (AC: #1)
-  - [ ] In `app/views/service_log_entries/index.html.erb`, add an "Actions" column to the table header and a cell per row with `link_to "Edit", edit_vehicle_service_log_entry_path(@vehicle, entry), class: "btn btn-sm btn-outline-secondary"`
+- [x] Task 3: Add "Edit" link in the service history index table (AC: #1)
+  - [x] In `app/views/service_log_entries/index.html.erb`, add an "Actions" column to the table header and a cell per row with `link_to "Edit", edit_vehicle_service_log_entry_path(@vehicle, entry), class: "btn btn-sm btn-outline-secondary"`
 
-- [ ] Task 4: Write request specs (AC: #1, #2, #3, #4)
-  - [ ] `GET /vehicles/:vehicle_id/service_log_entries/:id/edit` — 200 with pre-filled values (check key field values appear in body)
-  - [ ] `PATCH /vehicles/:vehicle_id/service_log_entries/:id` with valid params — redirects to index with `flash[:notice]`
-  - [ ] `PATCH` with invalid params (blank `serviced_on`) — 422 re-render
-  - [ ] `GET edit` and `PATCH` with another user's entry — redirect to root + `flash[:alert]`
+- [x] Task 4: Write request specs (AC: #1, #2, #3, #4)
+  - [x] `GET /vehicles/:vehicle_id/service_log_entries/:id/edit` — 200 with pre-filled values (check key field values appear in body)
+  - [x] `PATCH /vehicles/:vehicle_id/service_log_entries/:id` with valid params — redirects to index with `flash[:notice]`
+  - [x] `PATCH` with invalid params (blank `serviced_on`) — 422 re-render
+  - [x] `GET edit` and `PATCH` with another user's entry — redirect to root + `flash[:alert]`
 
 ## Dev Notes
 
@@ -313,6 +313,24 @@ claude-sonnet-4.6
 
 ### Debug Log References
 
+- Routes were restricted to `only: [:index, :new, :create]` — added `:edit, :update` to `config/routes.rb`. Architecture doc implied full CRUD but the existing routes file had explicit `only:` restriction.
+
 ### Completion Notes List
 
+- Added `before_action :set_entry, only: [:edit, :update]` to `ServiceLogEntriesController` using `@vehicle.service_log_entries.find(params[:id])` — cross-user protection is automatic via the double-scoped ownership chain.
+- Added `edit` action (loads `@service_types`) and `update` action (success → redirect to index with `flash[:notice]`; failure → render `:edit` with 422 + reload `@service_types`).
+- Created `app/views/service_log_entries/edit.html.erb` — thin wrapper reusing existing `_form.html.erb` partial (no partial changes needed).
+- Added "Actions" column header and per-row "Edit" button to `app/views/service_log_entries/index.html.erb`.
+- Updated `config/routes.rb`: added `:edit, :update` to service_log_entries resource.
+- Added 7 new request specs (edit GET + PATCH covering: owner access, pre-fill, valid update, 422 on invalid, cross-user protection for both verbs).
+- **114 specs pass, 0 failures**, 2 pre-existing pending stubs unchanged.
+
 ### File List
+
+- `app/controllers/service_log_entries_controller.rb` (modified — added set_entry, edit, update)
+- `app/views/service_log_entries/edit.html.erb` (created)
+- `app/views/service_log_entries/index.html.erb` (modified — added Actions column + edit link)
+- `config/routes.rb` (modified — added :edit, :update to service_log_entries)
+- `spec/requests/service_log_entries_spec.rb` (modified — added edit/update specs)
+- `_bmad-output/implementation-artifacts/3-4-edit-service-log-entry.md` (story updated)
+- `_bmad-output/implementation-artifacts/sprint-status.yaml` (updated)
