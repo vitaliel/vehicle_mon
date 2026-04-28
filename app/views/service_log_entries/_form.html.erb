@@ -1,0 +1,44 @@
+<%= form_with(model: [@vehicle, @entry], class: "needs-validation") do |f| %>
+  <%= render 'devise/shared/error_messages', resource: @entry %>
+
+  <div class="mb-3">
+    <%= f.label :service_type_id, "Service Type", class: "form-label" %>
+    <%= f.collection_select :service_type_id, @service_types, :id, :name,
+          { prompt: "Select a service type" },
+          { class: "form-select", required: true } %>
+  </div>
+
+  <div class="mb-3">
+    <%= f.label :serviced_on, "Date of Service", class: "form-label" %>
+    <%= f.date_field :serviced_on, class: "form-control", required: true %>
+  </div>
+
+  <div class="mb-3">
+    <%= f.label :mileage_at_service, "Mileage at Service (km)", class: "form-label" %>
+    <%= f.number_field :mileage_at_service, class: "form-control", min: 0, required: true %>
+  </div>
+
+  <div class="mb-3">
+    <%= f.label :service_center, "Service Center Name", class: "form-label" %>
+    <%= f.text_field :service_center, class: "form-control", required: true %>
+  </div>
+
+  <div class="row">
+    <div class="col-md-6 mb-3">
+      <%= f.label :parts_cost, "Parts Cost", class: "form-label" %>
+      <%= f.number_field :parts_cost, class: "form-control", step: 0.01, min: 0, value: f.object.parts_cost || 0 %>
+    </div>
+    <div class="col-md-6 mb-3">
+      <%= f.label :labour_cost, "Labour Cost", class: "form-label" %>
+      <%= f.number_field :labour_cost, class: "form-control", step: 0.01, min: 0, value: f.object.labour_cost || 0 %>
+    </div>
+  </div>
+
+  <div class="mb-3">
+    <%= f.label :notes, "Notes (optional)", class: "form-label" %>
+    <%= f.text_area :notes, class: "form-control", rows: 3 %>
+  </div>
+
+  <%= f.submit class: "btn btn-primary" %>
+  <%= link_to "Cancel", vehicle_service_log_entries_path(@vehicle), class: "btn btn-outline-secondary ms-2" %>
+<% end %>

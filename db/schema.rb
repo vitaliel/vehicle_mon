@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_04_28_110124) do
+ActiveRecord::Schema[8.1].define(version: 2026_04_28_133600) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pg_stat_statements"
@@ -19,14 +19,22 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_28_110124) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.bigint "vehicle_id", null: false
-    t.index [ "vehicle_id" ], name: "index_reminder_thresholds_on_vehicle_id"
+    t.index ["vehicle_id"], name: "index_reminder_thresholds_on_vehicle_id"
   end
 
   create_table "service_log_entries", force: :cascade do |t|
     t.datetime "created_at", null: false
+    t.decimal "labour_cost", precision: 10, scale: 2, default: "0.0", null: false
+    t.integer "mileage_at_service", null: false
+    t.text "notes"
+    t.decimal "parts_cost", precision: 10, scale: 2, default: "0.0", null: false
+    t.string "service_center", null: false
+    t.bigint "service_type_id", null: false
+    t.date "serviced_on", null: false
     t.datetime "updated_at", null: false
     t.bigint "vehicle_id", null: false
-    t.index [ "vehicle_id" ], name: "index_service_log_entries_on_vehicle_id"
+    t.index ["service_type_id"], name: "index_service_log_entries_on_service_type_id"
+    t.index ["vehicle_id"], name: "index_service_log_entries_on_vehicle_id"
   end
 
   create_table "service_types", force: :cascade do |t|
@@ -49,8 +57,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_28_110124) do
     t.string "reset_password_token"
     t.integer "sign_in_count", default: 0, null: false
     t.datetime "updated_at", null: false
-    t.index [ "email" ], name: "index_users_on_email", unique: true
-    t.index [ "reset_password_token" ], name: "index_users_on_reset_password_token", unique: true
+    t.index ["email"], name: "index_users_on_email", unique: true
+    t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
 
   create_table "vehicles", force: :cascade do |t|
@@ -61,10 +69,11 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_28_110124) do
     t.datetime "updated_at", null: false
     t.bigint "user_id", null: false
     t.integer "year"
-    t.index [ "user_id" ], name: "index_vehicles_on_user_id"
+    t.index ["user_id"], name: "index_vehicles_on_user_id"
   end
 
   add_foreign_key "reminder_thresholds", "vehicles"
+  add_foreign_key "service_log_entries", "service_types"
   add_foreign_key "service_log_entries", "vehicles"
   add_foreign_key "vehicles", "users"
 end
