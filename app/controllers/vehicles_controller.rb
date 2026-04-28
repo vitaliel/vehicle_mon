@@ -1,8 +1,11 @@
 class VehiclesController < ApplicationController
-  before_action :set_vehicle, only: [ :edit, :update, :destroy ]
+  before_action :set_vehicle, only: [ :show, :edit, :update, :destroy, :update_mileage ]
 
   def index
     @vehicles = current_user.vehicles.order(created_at: :desc)
+  end
+
+  def show
   end
 
   def new
@@ -38,6 +41,14 @@ class VehiclesController < ApplicationController
     end
   end
 
+  def update_mileage
+    if @vehicle.update(mileage_params)
+      redirect_to vehicle_path(@vehicle), notice: "Mileage updated successfully."
+    else
+      render :show, status: :unprocessable_entity
+    end
+  end
+
   private
 
   def set_vehicle
@@ -46,5 +57,9 @@ class VehiclesController < ApplicationController
 
   def vehicle_params
     params.require(:vehicle).permit(:make, :model, :year, :current_mileage)
+  end
+
+  def mileage_params
+    params.require(:vehicle).permit(:current_mileage)
   end
 end

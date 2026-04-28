@@ -35,7 +35,7 @@
 # - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
 
 generated: 2026-04-24T17:28:06.155Z
-last_updated: 2026-04-27T21:18:10.488Z
+last_updated: 2026-04-28T10:45:38.148Z
 project: bmad
 project_key: NOKEY
 tracking_system: file-system
@@ -53,7 +53,7 @@ development_status:
   2-1-add-list-vehicles: done
   2-2-edit-vehicle-details: done
   2-3-delete-vehicle: done
-  2-4-update-vehicle-mileage: backlog
+  2-4-update-vehicle-mileage: done
   epic-2-retrospective: optional
 
   epic-3: backlog

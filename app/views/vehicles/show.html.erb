@@ -1,0 +1,28 @@
+<div class="container py-4">
+  <h1 class="mb-1"><%= @vehicle.year %> <%= @vehicle.make %> <%= @vehicle.model %></h1>
+  <p class="text-muted mb-4">
+    <i class="bi bi-speedometer2"></i>
+    Current mileage: <strong><%= number_with_delimiter(@vehicle.current_mileage) %> km</strong>
+  </p>
+
+  <div class="card mb-4" style="max-width: 400px;">
+    <div class="card-body">
+      <h5 class="card-title">Update Mileage</h5>
+      <%= form_with(url: update_mileage_vehicle_path(@vehicle), method: :patch) do |f| %>
+        <%= render 'devise/shared/error_messages', resource: @vehicle %>
+        <div class="mb-3">
+          <%= f.label :current_mileage, "Current Mileage (km)", class: "form-label" %>
+          <%= f.number_field :current_mileage,
+                name: "vehicle[current_mileage]",
+                value: @vehicle.current_mileage,
+                class: "form-control",
+                min: 0,
+                required: true %>
+        </div>
+        <%= f.submit "Update Mileage", class: "btn btn-primary" %>
+      <% end %>
+    </div>
+  </div>
+
+  <%= link_to "← Back to Vehicles", vehicles_path, class: "btn btn-outline-secondary" %>
+</div>
