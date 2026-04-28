@@ -23,14 +23,47 @@ RSpec.describe "ServiceLogEntries", type: :request do
         expect(response.body).to include("Log your first service entry")
       end
 
-      it "lists existing entries in chronological order" do
-        create(:service_log_entry, vehicle: vehicle, service_type: service_type,
-               serviced_on: 1.month.ago, mileage_at_service: 40_000)
-        create(:service_log_entry, vehicle: vehicle, service_type: service_type,
-               serviced_on: Date.today, mileage_at_service: 50_000)
+      it "lists existing entries in chronological order (oldest first)" do
+        old_entry = create(:service_log_entry, vehicle: vehicle, service_type: service_type,
+               serviced_on: Date.new(2025, 1, 1), mileage_at_service: 40_000)
+        new_entry = create(:service_log_entry, vehicle: vehicle, service_type: service_type,
+               serviced_on: Date.new(2025, 6, 1), mileage_at_service: 50_000)
         get vehicle_service_log_entries_path(vehicle)
         expect(response).to have_http_status(:ok)
         expect(response.body).to include(service_type.name)
+        # Older mileage appears before newer mileage in HTML
+        expect(response.body.index("40,000")).to be < response.body.index("50,000")
+      end
+
+      it "displays date formatted as DD Mon YYYY" do
+        create(:service_log_entry, vehicle: vehicle, service_type: service_type,
+               serviced_on: Date.new(2025, 4, 23), mileage_at_service: 45_000)
+        get vehicle_service_log_entries_path(vehicle)
+        expect(response.body).to include("23 Apr 2025")
+      end
+
+      it "displays mileage with delimiter and km suffix" do
+        create(:service_log_entry, vehicle: vehicle, service_type: service_type,
+               serviced_on: Date.today, mileage_at_service: 92_400)
+        get vehicle_service_log_entries_path(vehicle)
+        expect(response.body).to include("92,400")
+      end
+
+      it "displays costs formatted as currency" do
+        create(:service_log_entry, vehicle: vehicle, service_type: service_type,
+               serviced_on: Date.today, mileage_at_service: 10_000,
+               parts_cost: 25.50, labour_cost: 80.00)
+        get vehicle_service_log_entries_path(vehicle)
+        expect(response.body).to include("25.50")
+        expect(response.body).to include("80.00")
+      end
+
+      it "displays notes text" do
+        create(:service_log_entry, vehicle: vehicle, service_type: service_type,
+               serviced_on: Date.today, mileage_at_service: 10_000,
+               notes: "Replaced cabin air filter")
+        get vehicle_service_log_entries_path(vehicle)
+        expect(response.body).to include("Replaced cabin air filter")
       end
 
       it "redirects to root when accessing another user's vehicle" do

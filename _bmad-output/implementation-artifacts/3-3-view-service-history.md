@@ -1,6 +1,6 @@
 # Story 3.3: View Service History
 
-Status: ready-for-dev
+Status: review
 
 ## Story
 
@@ -22,18 +22,18 @@ so that I can review the full maintenance history at a glance.
 
 ## Tasks / Subtasks
 
-- [ ] Task 1: Add "View Service History" navigation link on vehicle detail page (AC: #3)
-  - [ ] Add a link to `vehicle_service_log_entries_path(@vehicle)` in `app/views/vehicles/show.html.erb`
+- [x] Task 1: Add "View Service History" navigation link on vehicle detail page (AC: #3)
+  - [x] Add a link to `vehicle_service_log_entries_path(@vehicle)` in `app/views/vehicles/show.html.erb`
 
-- [ ] Task 2: Verify and expand index view for all AC field requirements (AC: #1, #2, #4)
-  - [ ] Confirm `index.html.erb` renders date with `strftime('%d %b %Y')`, mileage with `number_with_delimiter`, costs with `number_to_currency`, notes column present
-  - [ ] Confirm `table-responsive` wrapper is present for mobile horizontal scroll
+- [x] Task 2: Verify and expand index view for all AC field requirements (AC: #1, #2, #4)
+  - [x] Confirm `index.html.erb` renders date with `strftime('%d %b %Y')`, mileage with `number_with_delimiter`, costs with `number_to_currency`, notes column present
+  - [x] Confirm `table-responsive` wrapper is present for mobile horizontal scroll
 
-- [ ] Task 3: Expand request specs for story 3.3 ACs (AC: #1, #2, #3, #5)
-  - [ ] Add spec asserting chronological ordering (oldest entry appears before newer in response body)
-  - [ ] Add spec verifying field display: formatted date string (e.g. "01 Jan 2025"), delimited mileage, currency-formatted costs, notes text
-  - [ ] Add spec verifying vehicle show page contains link to service history (GET /vehicles/:id includes link text "Service History" or similar)
-  - [ ] Cross-user redirect spec already exists — confirm it covers 5th AC (no new spec needed)
+- [x] Task 3: Expand request specs for story 3.3 ACs (AC: #1, #2, #3, #5)
+  - [x] Add spec asserting chronological ordering (oldest entry appears before newer in response body)
+  - [x] Add spec verifying field display: formatted date string (e.g. "01 Jan 2025"), delimited mileage, currency-formatted costs, notes text
+  - [x] Add spec verifying vehicle show page contains link to service history (GET /vehicles/:id includes link text "Service History" or similar)
+  - [x] Cross-user redirect spec already exists — confirm it covers 5th AC (no new spec needed)
 
 ## Dev Notes
 
@@ -164,6 +164,25 @@ claude-sonnet-4.6
 
 ### Debug Log References
 
+No blockers encountered.
+
 ### Completion Notes List
 
+- Story 3.2 had already implemented the `index` action (chronological `order(serviced_on: :asc)`, `includes(:service_type)` for N+1 prevention) and the full `index.html.erb` view with all display formatting (date `strftime('%d %b %Y')`, `number_with_delimiter` km, `number_to_currency`, notes, `table-responsive`). Story 3.3 scope was surgical.
+- Added `link_to "View Service History"` in `app/views/vehicles/show.html.erb` pointing to `vehicle_service_log_entries_path(@vehicle)`.
+- Expanded `spec/requests/service_log_entries_spec.rb`: replaced the vague "chronological order" spec with 5 targeted specs covering ordering by mileage index position, date formatting ("23 Apr 2025"), mileage delimiter ("92,400"), cost formatting ("25.50", "80.00"), and notes text display.
+- Added spec to `spec/requests/vehicles_spec.rb` asserting vehicle show page body includes `vehicle_service_log_entries_path(vehicle)` URL.
+- All 107 specs pass (0 failures, 2 pre-existing pending stubs).
+
 ### File List
+
+- `app/views/vehicles/show.html.erb` (modified — added service history navigation link)
+- `spec/requests/service_log_entries_spec.rb` (modified — expanded index display/ordering specs)
+- `spec/requests/vehicles_spec.rb` (modified — added service history link spec on show page)
+- `_bmad-output/implementation-artifacts/3-3-view-service-history.md` (story updated)
+- `_bmad-output/implementation-artifacts/sprint-status.yaml` (updated)
+
+## Change Log
+
+- 2026-04-28: Story 3.3 created — View Service History context prepared for development.
+- 2026-04-28: Story 3.3 implemented — Added service history nav link on vehicle show page; expanded index display/ordering specs. 107 specs pass. Status → review.
