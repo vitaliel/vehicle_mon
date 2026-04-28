@@ -1,6 +1,6 @@
 # Story 3.2: Create Service Log Entry
 
-Status: ready-for-dev
+Status: review
 
 ## Story
 
@@ -20,31 +20,31 @@ so that I have a permanent record of every maintenance event.
 
 ## Tasks / Subtasks
 
-- [ ] Task 1: Migrate `service_log_entries` table to add all required columns (AC: #1, #2)
-  - [ ] Create migration to add to `service_log_entries`: `service_type_id` (bigint, not null, FK), `serviced_on` (date, not null), `mileage_at_service` (integer, not null), `service_center` (string, not null), `parts_cost` (decimal 10,2, not null, default 0), `labour_cost` (decimal 10,2, not null, default 0), `notes` (text, nullable).
-  - [ ] Add DB index on `service_log_entries.service_type_id`.
-  - [ ] Add FK constraint `service_log_entries → service_types`.
+- [x] Task 1: Migrate `service_log_entries` table to add all required columns (AC: #1, #2)
+  - [x] Create migration to add to `service_log_entries`: `service_type_id` (bigint, not null, FK), `serviced_on` (date, not null), `mileage_at_service` (integer, not null), `service_center` (string, not null), `parts_cost` (decimal 10,2, not null, default 0), `labour_cost` (decimal 10,2, not null, default 0), `notes` (text, nullable).
+  - [x] Add DB index on `service_log_entries.service_type_id`.
+  - [x] Add FK constraint `service_log_entries → service_types`.
 
-- [ ] Task 2: Update `ServiceLogEntry` model (AC: #1, #2, #3)
-  - [ ] Add `belongs_to :service_type` association.
-  - [ ] Add validations: `service_type` presence, `serviced_on` presence, `mileage_at_service` numericality (only_integer, ≥ 0), `service_center` presence, `parts_cost` numericality (≥ 0), `labour_cost` numericality (≥ 0).
-  - [ ] `notes` is optional — no presence validation.
+- [x] Task 2: Update `ServiceLogEntry` model (AC: #1, #2, #3)
+  - [x] Add `belongs_to :service_type` association.
+  - [x] Add validations: `service_type` presence, `serviced_on` presence, `mileage_at_service` numericality (only_integer, ≥ 0), `service_center` presence, `parts_cost` numericality (≥ 0), `labour_cost` numericality (≥ 0).
+  - [x] `notes` is optional — no presence validation.
 
-- [ ] Task 3: Create `ServiceLogEntriesController` (AC: #2, #3, #4)
-  - [ ] `before_action :set_vehicle` — uses `current_user.vehicles.find(params[:vehicle_id])` (triggers `RecordNotFound` → `handle_not_found` for cross-user access).
-  - [ ] `before_action :set_entry, only: [:show, :edit, :update, :destroy]` — scoped through `@vehicle.service_log_entries.find(params[:id])`.
-  - [ ] `new` — builds `@entry = @vehicle.service_log_entries.build` and sets `@service_types`.
-  - [ ] `create` — builds, saves, on success redirects to `vehicle_service_log_entries_path(@vehicle)` with `flash[:notice]`, on failure re-renders `:new` with `status: :unprocessable_entity`.
-  - [ ] `index` — scoped entries for AC coverage (Story 3.3 expands this; a minimal index is needed so create can redirect to it).
+- [x] Task 3: Create `ServiceLogEntriesController` (AC: #2, #3, #4)
+  - [x] `before_action :set_vehicle` — uses `current_user.vehicles.find(params[:vehicle_id])` (triggers `RecordNotFound` → `handle_not_found` for cross-user access).
+  - [x] `before_action :set_entry, only: [:show, :edit, :update, :destroy]` — scoped through `@vehicle.service_log_entries.find(params[:id])`.
+  - [x] `new` — builds `@entry = @vehicle.service_log_entries.build` and sets `@service_types`.
+  - [x] `create` — builds, saves, on success redirects to `vehicle_service_log_entries_path(@vehicle)` with `flash[:notice]`, on failure re-renders `:new` with `status: :unprocessable_entity`.
+  - [x] `index` — scoped entries for AC coverage (Story 3.3 expands this; a minimal index is needed so create can redirect to it).
 
-- [ ] Task 4: Create views (AC: #1, #2, #3)
-  - [ ] `app/views/service_log_entries/_form.html.erb` — Bootstrap form with labeled fields: service_type select (ordered by name), date_field for `serviced_on`, number_field for `mileage_at_service`, text_field for `service_center`, number_field (step 0.01, min 0) for `parts_cost` and `labour_cost`, text_area for `notes`.
-  - [ ] `app/views/service_log_entries/new.html.erb` — renders `_form` partial.
-  - [ ] `app/views/service_log_entries/index.html.erb` — minimal list (used as redirect target after create); full display is Story 3.3.
+- [x] Task 4: Create views (AC: #1, #2, #3)
+  - [x] `app/views/service_log_entries/_form.html.erb` — Bootstrap form with labeled fields: service_type select (ordered by name), date_field for `serviced_on`, number_field for `mileage_at_service`, text_field for `service_center`, number_field (step 0.01, min 0) for `parts_cost` and `labour_cost`, text_area for `notes`.
+  - [x] `app/views/service_log_entries/new.html.erb` — renders `_form` partial.
+  - [x] `app/views/service_log_entries/index.html.erb` — minimal list (used as redirect target after create); full display is Story 3.3.
 
-- [ ] Task 5: Create factory and request specs (AC: all)
-  - [ ] `spec/factories/service_log_entries.rb` — factory with all required fields, association to vehicle and service_type.
-  - [ ] `spec/requests/service_log_entries_spec.rb` — cover: unauthenticated redirect, cross-user redirect (AC#4), GET new returns 200, POST create valid → redirect + notice, POST create missing required field → 422, entry is scoped to vehicle.
+- [x] Task 5: Create factory and request specs (AC: all)
+  - [x] `spec/factories/service_log_entries.rb` — factory with all required fields, association to vehicle and service_type.
+  - [x] `spec/requests/service_log_entries_spec.rb` — cover: unauthenticated redirect, cross-user redirect (AC#4), GET new returns 200, POST create valid → redirect + notice, POST create missing required field → 422, entry is scoped to vehicle.
 
 ## Dev Notes
 
@@ -170,6 +170,37 @@ claude-sonnet-4.6
 
 ### Debug Log References
 
+No blockers encountered.
+
 ### Completion Notes List
 
+- Created migration `db/migrate/20260428121823_add_columns_to_service_log_entries.rb` adding 7 columns to `service_log_entries`: `service_type_id` (FK + index), `serviced_on` (date), `mileage_at_service` (integer), `service_center` (string), `parts_cost` (decimal 10,2 default 0), `labour_cost` (decimal 10,2 default 0), `notes` (text nullable).
+- Updated `ServiceLogEntry` model: added `belongs_to :service_type` and full validations for all required fields. Notes is optional (no presence validation).
+- Created `ServiceLogEntriesController` with full CRUD actions, association-scoped auth (`current_user.vehicles.find` → `@vehicle.service_log_entries.find`), `@service_types = ServiceType.order(:name)` for dropdown.
+- Created 3 views: `_form.html.erb` (Bootstrap form with all labeled fields), `new.html.erb`, `index.html.erb` (chronological list + empty state).
+- Created `spec/factories/service_log_entries.rb` factory.
+- Created `spec/models/service_log_entry_spec.rb` with 9 examples.
+- Created `spec/requests/service_log_entries_spec.rb` with 13 examples covering all ACs.
+- Fixed pre-existing regression in `spec/requests/vehicles_spec.rb` (delete cascade test used bare `ServiceLogEntry.create!` which now fails validation — replaced with `create(:service_log_entry, ...)`).
+- All 101 specs pass, 0 failures, 2 pre-existing pending stubs.
+
 ### File List
+
+- `db/migrate/20260428121823_add_columns_to_service_log_entries.rb` (new)
+- `db/schema.rb` (updated by migration)
+- `app/models/service_log_entry.rb` (modified)
+- `app/controllers/service_log_entries_controller.rb` (new)
+- `app/views/service_log_entries/_form.html.erb` (new)
+- `app/views/service_log_entries/new.html.erb` (new)
+- `app/views/service_log_entries/index.html.erb` (new)
+- `spec/factories/service_log_entries.rb` (new)
+- `spec/models/service_log_entry_spec.rb` (new)
+- `spec/requests/service_log_entries_spec.rb` (new)
+- `spec/requests/vehicles_spec.rb` (modified — fixed cascade test to use factory)
+- `_bmad-output/implementation-artifacts/3-2-create-service-log-entry.md` (story updated)
+- `_bmad-output/implementation-artifacts/sprint-status.yaml` (updated)
+
+## Change Log
+
+- 2026-04-28: Story 3.2 created — Create Service Log Entry context prepared for development.
+- 2026-04-28: Story 3.2 implemented — Migration, model, controller, views, factory and specs complete. 101 specs pass. Status → review.

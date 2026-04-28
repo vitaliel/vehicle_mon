@@ -190,7 +190,7 @@ RSpec.describe "Vehicles", type: :request do
 
       it "deletes own vehicle and cascades associated records" do
         vehicle
-        ServiceLogEntry.create!(vehicle: vehicle)
+        create(:service_log_entry, vehicle: vehicle)
         ReminderThreshold.create!(vehicle: vehicle)
 
         expect {
