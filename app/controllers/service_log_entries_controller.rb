@@ -35,8 +35,11 @@ class ServiceLogEntriesController < ApplicationController
   end
 
   def destroy
-    @entry.destroy
-    redirect_to vehicle_service_log_entries_path(@vehicle), notice: "Service entry deleted successfully."
+    if @entry.destroy
+      redirect_to vehicle_service_log_entries_path(@vehicle), notice: "Service entry deleted successfully."
+    else
+      redirect_to vehicle_service_log_entries_path(@vehicle), alert: @entry.errors.full_messages.to_sentence.presence || "Unable to delete service entry."
+    end
   end
 
   private

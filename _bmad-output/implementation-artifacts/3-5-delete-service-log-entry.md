@@ -1,6 +1,6 @@
 # Story 3.5: Delete Service Log Entry
 
-Status: review
+Status: done
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 
@@ -32,6 +32,10 @@ so that I can remove incorrectly logged records.
   - [x] `DELETE /vehicles/:vehicle_id/service_log_entries/:id` unauthenticated — redirects to sign-in
   - [x] `DELETE` authenticated as owner — destroys entry, redirects to index with `flash[:notice]`
   - [x] `DELETE` with another user's entry — redirects to root with `flash[:alert]`
+
+### Review Findings
+
+- [x] [Review][Patch] Destroy action reports success even when deletion fails [app/controllers/service_log_entries_controller.rb:37]
 
 ## Dev Notes
 

@@ -297,6 +297,20 @@ RSpec.describe "ServiceLogEntries", type: :request do
         expect(response).to redirect_to(vehicle_service_log_entries_path(vehicle))
         expect(flash[:notice]).to eq("Service entry deleted successfully.")
       end
+
+      it "redirects with flash[:alert] when deletion fails" do
+        entry
+        allow_any_instance_of(ServiceLogEntry).to receive(:destroy) do |record|
+          record.errors.add(:base, "Cannot delete this service entry.")
+          false
+        end
+
+        expect {
+          delete vehicle_service_log_entry_path(vehicle, entry)
+        }.not_to change(ServiceLogEntry, :count)
+        expect(response).to redirect_to(vehicle_service_log_entries_path(vehicle))
+        expect(flash[:alert]).to eq("Cannot delete this service entry.")
+      end
     end
 
     context "when accessing another user's entry (cross-user)" do
