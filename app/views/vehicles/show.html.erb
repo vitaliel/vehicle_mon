@@ -30,16 +30,16 @@
       <thead>
         <tr>
           <th>Service Type</th>
-          <th>Status</th>
-          <th>Mileage Remaining</th>
-          <th>Days Remaining</th>
+          <th style="text-align: center;">Status</th>
+          <th style="text-align: center;">Mileage Remaining</th>
+          <th style="text-align: center;">Days Remaining</th>
         </tr>
       </thead>
       <tbody>
         <% @due_soon_statuses.each do |service_type, result| %>
           <tr>
             <td><%= service_type.name %></td>
-            <td>
+            <td align="center">
               <% case result[:status]
                  when :ok %>
                 <span class="badge bg-success">OK</span>
@@ -49,12 +49,12 @@
                 <span class="badge bg-secondary">Not configured</span>
               <% end %>
             </td>
-            <td>
+            <td align="right">
               <% if result[:mileage_remaining] %>
                 <%= number_with_delimiter(result[:mileage_remaining]) %> km
               <% end %>
             </td>
-            <td>
+            <td align="right">
               <% if result[:days_remaining] %>
                 <%= result[:days_remaining] %> days
               <% end %>
