@@ -141,4 +141,49 @@ RSpec.describe DueSoonCalculator do
       expect(result[:days_remaining]).to be_between(-1, 0)
     end
   end
+
+  context "when threshold exists but both intervals are nil" do
+    let!(:threshold) do
+      create(:reminder_threshold, vehicle: vehicle, service_type: service_type,
+             mileage_interval: nil, time_interval_months: nil)
+    end
+
+    it "returns :unconfigured" do
+      expect(result).to eq({ status: :unconfigured, mileage_remaining: nil, days_remaining: nil })
+    end
+  end
+
+  context "when mileage threshold is configured but vehicle mileage is nil" do
+    let!(:threshold) do
+      create(:reminder_threshold, vehicle: vehicle, service_type: service_type,
+             mileage_interval: 10_000, time_interval_months: nil)
+    end
+
+    before do
+      vehicle.update_column(:current_mileage, nil)
+    end
+
+    it "returns :unconfigured instead of raising" do
+      expect(result).to eq({ status: :unconfigured, mileage_remaining: nil, days_remaining: nil })
+    end
+  end
+
+  context "when multiple entries share the same service date" do
+    let!(:threshold) do
+      create(:reminder_threshold, vehicle: vehicle, service_type: service_type,
+             mileage_interval: 10_000, time_interval_months: nil)
+    end
+    let!(:older_id) do
+      create(:service_log_entry, vehicle: vehicle, service_type: service_type,
+             mileage_at_service: 80_000, serviced_on: Date.current)
+    end
+    let!(:newer_id_same_day) do
+      create(:service_log_entry, vehicle: vehicle, service_type: service_type,
+             mileage_at_service: 90_000, serviced_on: Date.current)
+    end
+
+    it "uses the most recently created entry for deterministic mileage calculation" do
+      expect(result[:mileage_remaining]).to eq(5_000)
+    end
+  end
 end

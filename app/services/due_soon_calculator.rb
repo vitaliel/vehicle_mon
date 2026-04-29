@@ -11,10 +11,12 @@ class DueSoonCalculator
   def call
     threshold = ReminderThreshold.find_by(vehicle: @vehicle, service_type: @service_type)
     return unconfigured if threshold.nil?
+    return unconfigured if threshold.mileage_interval.nil? && threshold.time_interval_months.nil?
+    return unconfigured if threshold.mileage_interval && @vehicle.current_mileage.nil?
 
     last_entry = @vehicle.service_log_entries
                          .where(service_type: @service_type)
-                         .order(serviced_on: :desc)
+                         .order(serviced_on: :desc, id: :desc)
                          .first
 
     mileage_remaining = calculate_mileage_remaining(threshold, last_entry)

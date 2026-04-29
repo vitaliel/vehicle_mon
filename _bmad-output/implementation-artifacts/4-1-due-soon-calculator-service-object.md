@@ -1,6 +1,6 @@
 # Story 4.1: DueSoonCalculator Service Object
 
-Status: review
+Status: done
 
 ## Story
 
@@ -362,3 +362,10 @@ claude-sonnet-4.6
 - `spec/requests/vehicles_spec.rb` (modified — fixed ReminderThreshold cascade test to use factory)
 - `_bmad-output/implementation-artifacts/4-1-due-soon-calculator-service-object.md` (story updated)
 - `_bmad-output/implementation-artifacts/sprint-status.yaml` (updated)
+
+### Review Findings
+
+- [x] [Review][Patch] Treat threshold rows with both intervals nil as unconfigured [app/services/due_soon_calculator.rb:14]
+- [x] [Review][Defer] Migration can fail on existing rows because `service_type_id` is added as NOT NULL immediately [db/migrate/20260429103712_add_columns_to_reminder_thresholds.rb:3] — deferred by user: skip case when migration can fail
+- [x] [Review][Patch] Calculator can raise on nil vehicle mileage from legacy/DB-level nullable data [app/services/due_soon_calculator.rb:37]
+- [x] [Review][Patch] Last service entry selection is nondeterministic when `serviced_on` ties [app/services/due_soon_calculator.rb:17]
