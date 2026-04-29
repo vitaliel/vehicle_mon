@@ -68,7 +68,7 @@ development_status:
   4-1-due-soon-calculator-service-object: done
   4-2-configure-reminder-thresholds: done
   4-3-due-soon-status-on-vehicle-detail-view: done
-  4-4-recalculate-due-soon-on-data-changes: ready-for-dev
+  4-4-recalculate-due-soon-on-data-changes: review
   epic-4-retrospective: optional
 
   epic-5: backlog

@@ -1,6 +1,6 @@
 # Story 4.4: Recalculate Due-Soon on Data Changes
 
-Status: ready-for-dev
+Status: review
 
 ## Story
 
@@ -28,22 +28,22 @@ so that the reminders always reflect the current state of my vehicle.
 
 ## Tasks / Subtasks
 
-- [ ] Task 1: Fix `ServiceLogEntriesController#create` redirect (AC: #1, #4)
-  - [ ] Change successful-save redirect from `vehicle_service_log_entries_path(@vehicle)` to `vehicle_path(@vehicle)`
-  - [ ] Update flash notice if desired (keep "Service entry logged successfully." — no change needed)
-  - [ ] Update existing spec assertion in `spec/requests/service_log_entries_spec.rb` that expects redirect to `vehicle_service_log_entries_path(vehicle)` after create
+- [x] Task 1: Fix `ServiceLogEntriesController#create` redirect (AC: #1, #4)
+  - [x] Change successful-save redirect from `vehicle_service_log_entries_path(@vehicle)` to `vehicle_path(@vehicle)`
+  - [x] Update flash notice if desired (keep "Service entry logged successfully." — no change needed)
+  - [x] Update existing spec assertion in `spec/requests/service_log_entries_spec.rb` that expects redirect to `vehicle_service_log_entries_path(vehicle)` after create
 
-- [ ] Task 2: Fix `ReminderThresholdsController` redirects (AC: #3, #4)
-  - [ ] `create` success: change redirect from `vehicle_reminder_thresholds_path(@vehicle)` to `vehicle_path(@vehicle)`
-  - [ ] `update` success: change redirect from `vehicle_reminder_thresholds_path(@vehicle)` to `vehicle_path(@vehicle)`
-  - [ ] `update` blank-fields removal branch (calls `@threshold.destroy`): change redirect from `vehicle_reminder_thresholds_path(@vehicle)` to `vehicle_path(@vehicle)`
-  - [ ] Update existing spec assertions in `spec/requests/reminder_thresholds_spec.rb` that expect redirect to `vehicle_reminder_thresholds_path(vehicle)` after create success, update success, and blank-fields removal
+- [x] Task 2: Fix `ReminderThresholdsController` redirects (AC: #3, #4)
+  - [x] `create` success: change redirect from `vehicle_reminder_thresholds_path(@vehicle)` to `vehicle_path(@vehicle)`
+  - [x] `update` success: change redirect from `vehicle_reminder_thresholds_path(@vehicle)` to `vehicle_path(@vehicle)`
+  - [x] `update` blank-fields removal branch (calls `@threshold.destroy`): change redirect from `vehicle_reminder_thresholds_path(@vehicle)` to `vehicle_path(@vehicle)`
+  - [x] Update existing spec assertions in `spec/requests/reminder_thresholds_spec.rb` that expect redirect to `vehicle_reminder_thresholds_path(vehicle)` after create success, update success, and blank-fields removal
 
-- [ ] Task 3: Add recalculation integration specs (AC: #1, #2, #3, #4)
-  - [ ] In `spec/requests/service_log_entries_spec.rb` `POST create` context: setup vehicle with breached threshold, log a fresh service entry, follow redirect to vehicle show, verify badge transitions from `:due_soon` → `:ok` (confirms recalculation)
-  - [ ] In `spec/requests/vehicles_spec.rb` `PATCH update_mileage` context: vehicle with 2 service types and breached thresholds, update mileage further, follow redirect, verify due-soon badges shown for both service types
-  - [ ] In `spec/requests/reminder_thresholds_spec.rb` `PATCH update` context: lower a threshold's `mileage_interval` so current state becomes `:due_soon`, follow redirect to vehicle show, verify due-soon badge appears
-  - [ ] In each new spec, verify `DueSoonCalculator.call` is invoked via `and_call_original` stub (same pattern as Story 4.3's delegation spec in `spec/requests/vehicles_spec.rb`)
+- [x] Task 3: Add recalculation integration specs (AC: #1, #2, #3, #4)
+  - [x] In `spec/requests/service_log_entries_spec.rb` `POST create` context: setup vehicle with breached threshold, log a fresh service entry, follow redirect to vehicle show, verify badge transitions from `:due_soon` → `:ok` (confirms recalculation)
+  - [x] In `spec/requests/vehicles_spec.rb` `PATCH update_mileage` context: vehicle with 2 service types and breached thresholds, update mileage further, follow redirect, verify due-soon badges shown for both service types
+  - [x] In `spec/requests/reminder_thresholds_spec.rb` `PATCH update` context: lower a threshold's `mileage_interval` so current state becomes `:due_soon`, follow redirect to vehicle show, verify due-soon badge appears
+  - [x] In each new spec, verify `DueSoonCalculator.call` is invoked via `and_call_original` stub (same pattern as Story 4.3's delegation spec in `spec/requests/vehicles_spec.rb`)
 
 ## Dev Notes
 
@@ -220,4 +220,21 @@ claude-sonnet-4.6
 
 ### Completion Notes List
 
+- All 3 controller redirect fixes applied (ServiceLogEntriesController#create, ReminderThresholdsController#create, ReminderThresholdsController#update)
+- 6 existing spec redirect assertions updated to match new vehicle_path targets
+- 3 new recalculation integration specs added (one per trigger: service log create, mileage update, threshold update)
+- Each new spec verifies DueSoonCalculator.call is invoked via and_call_original (AC #4 — no inline logic)
+- Full suite: 178 examples, 0 failures
+
 ### File List
+
+- app/controllers/service_log_entries_controller.rb
+- app/controllers/reminder_thresholds_controller.rb
+- spec/requests/service_log_entries_spec.rb
+- spec/requests/reminder_thresholds_spec.rb
+- spec/requests/vehicles_spec.rb
+- _bmad-output/implementation-artifacts/sprint-status.yaml
+
+## Change Log
+
+- **2026-04-29**: Fixed redirect targets in ServiceLogEntriesController#create and ReminderThresholdsController (create/update) to point to vehicle_path instead of the nested index paths, ensuring vehicles#show recalculates due-soon via DueSoonCalculator on every data change. Updated 6 broken spec assertions and added 3 new recalculation integration specs verifying DueSoonCalculator delegation for all three trigger flows (FR23, FR24, FR25, ARC4).
