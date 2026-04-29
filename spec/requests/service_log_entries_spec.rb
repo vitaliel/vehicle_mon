@@ -275,4 +275,54 @@ RSpec.describe "ServiceLogEntries", type: :request do
       end
     end
   end
+
+  describe "DELETE /vehicles/:vehicle_id/service_log_entries/:id" do
+    let(:entry) { create(:service_log_entry, vehicle: vehicle, service_type: service_type) }
+
+    context "when unauthenticated" do
+      it "redirects to sign-in" do
+        delete vehicle_service_log_entry_path(vehicle, entry)
+        expect(response).to redirect_to(new_user_session_path)
+      end
+    end
+
+    context "when authenticated as owner" do
+      before { sign_in user }
+
+      it "destroys the entry and redirects to index with flash[:notice]" do
+        entry # materialize before delete
+        expect {
+          delete vehicle_service_log_entry_path(vehicle, entry)
+        }.to change(ServiceLogEntry, :count).by(-1)
+        expect(response).to redirect_to(vehicle_service_log_entries_path(vehicle))
+        expect(flash[:notice]).to eq("Service entry deleted successfully.")
+      end
+
+      it "redirects with flash[:alert] when deletion fails" do
+        entry
+        allow_any_instance_of(ServiceLogEntry).to receive(:destroy) do |record|
+          record.errors.add(:base, "Cannot delete this service entry.")
+          false
+        end
+
+        expect {
+          delete vehicle_service_log_entry_path(vehicle, entry)
+        }.not_to change(ServiceLogEntry, :count)
+        expect(response).to redirect_to(vehicle_service_log_entries_path(vehicle))
+        expect(flash[:alert]).to eq("Cannot delete this service entry.")
+      end
+    end
+
+    context "when accessing another user's entry (cross-user)" do
+      before { sign_in user }
+
+      it "redirects to root with flash[:alert]" do
+        other_vehicle = create(:vehicle, user: other_user)
+        other_entry = create(:service_log_entry, vehicle: other_vehicle, service_type: service_type)
+        delete vehicle_service_log_entry_path(other_vehicle, other_entry)
+        expect(response).to redirect_to(root_path)
+        expect(flash[:alert]).to be_present
+      end
+    end
+  end
 end

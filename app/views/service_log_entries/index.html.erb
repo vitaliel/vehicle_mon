@@ -35,6 +35,11 @@
               <td>
                 <%= link_to "Edit", edit_vehicle_service_log_entry_path(@vehicle, entry),
                       class: "btn btn-sm btn-outline-secondary" %>
+                <%= button_to "Delete", vehicle_service_log_entry_path(@vehicle, entry),
+                      method: :delete,
+                      data: { turbo_confirm: "Delete this service entry?" },
+                      class: "btn btn-sm btn-outline-danger ms-1",
+                      form: { style: "display:inline" } %>
               </td>
             </tr>
           <% end %>

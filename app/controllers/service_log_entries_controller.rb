@@ -1,6 +1,6 @@
 class ServiceLogEntriesController < ApplicationController
   before_action :set_vehicle
-  before_action :set_entry, only: [ :edit, :update ]
+  before_action :set_entry, only: [ :edit, :update, :destroy ]
 
   def index
     @entries = @vehicle.service_log_entries.includes(:service_type).order(serviced_on: :asc)
@@ -31,6 +31,14 @@ class ServiceLogEntriesController < ApplicationController
     else
       @service_types = ServiceType.order(:name)
       render :edit, status: :unprocessable_entity
+    end
+  end
+
+  def destroy
+    if @entry.destroy
+      redirect_to vehicle_service_log_entries_path(@vehicle), notice: "Service entry deleted successfully."
+    else
+      redirect_to vehicle_service_log_entries_path(@vehicle), alert: @entry.errors.full_messages.to_sentence.presence || "Unable to delete service entry."
     end
   end
 
