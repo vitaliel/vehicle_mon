@@ -68,9 +68,12 @@ RSpec.describe "Dashboard", type: :request do
         expect(response.body).to include("OK")
       end
 
-      it "includes a link to each vehicle's detail page" do
+      it "includes a title link to each vehicle's detail page" do
+        second_vehicle = create(:vehicle, user: user, make: "Toyota", model: "Corolla", year: 2021, current_mileage: 40_000)
         get root_path
-        expect(response.body).to include(%(href="#{vehicle_path(vehicle)}"))
+        title_links = Nokogiri::HTML(response.body).css("h5.card-title a").map { |link| link["href"] }
+
+        expect(title_links).to include(vehicle_path(vehicle), vehicle_path(second_vehicle))
       end
 
       it "shows not configured badge when no thresholds are set" do

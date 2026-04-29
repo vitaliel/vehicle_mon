@@ -1,6 +1,6 @@
 # Story 5.2: Navigate to Vehicle Detail View
 
-Status: review
+Status: done
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 
@@ -33,6 +33,11 @@ so that I can see the full service history and due-soon status for a specific ca
 
 - [x] Task 3: Add navigation specs to dashboard_spec (AC: #1)
   - [x] In `spec/requests/dashboard_spec.rb`, under the `"when authenticated with vehicles"` context, add an example that verifies each vehicle card contains a link to `vehicle_path(vehicle)`
+
+### Review Findings
+
+- [x] [Review][Patch] Dashboard navigation spec under-covers AC intent (checks one href, not title-link behavior) [spec/requests/dashboard_spec.rb:71]
+- [x] [Review][Patch] Cross-user redirect flash assertion should match exact alert text and be less brittle [spec/requests/vehicles_spec.rb:242]
 
 ## Dev Notes
 
