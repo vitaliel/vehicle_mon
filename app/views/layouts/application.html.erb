@@ -26,7 +26,9 @@
 
   <body>
     <nav class="navbar navbar-light bg-light px-3 mb-3">
-      <span class="navbar-brand mb-0 h1">Vehicle Tracker</span>
+      <span class="navbar-brand mb-0 h1">
+        <%= link_to "Vehicle Tracker", root_path, class: "navbar-brand" %>
+      </span>
       <% if user_signed_in? %>
         <%= link_to "My Vehicles", vehicles_path,
               class: "btn btn-outline-success btn-sm me-2" %>
