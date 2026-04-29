@@ -71,7 +71,7 @@ development_status:
   4-4-recalculate-due-soon-on-data-changes: done
   epic-4-retrospective: optional
 
-  epic-5: backlog
-  5-1-multi-vehicle-dashboard: backlog
+  epic-5: in-progress
+  5-1-multi-vehicle-dashboard: ready-for-dev
   5-2-navigate-to-vehicle-detail-view: backlog
   epic-5-retrospective: optional
