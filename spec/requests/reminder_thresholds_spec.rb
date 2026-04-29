@@ -122,6 +122,24 @@ RSpec.describe "ReminderThresholds", type: :request do
       end
     end
 
+    context "when threshold already exists for the service type" do
+      it "updates existing threshold instead of creating a duplicate row" do
+        existing = create(:reminder_threshold, vehicle: vehicle, service_type: service_type,
+                          mileage_interval: 10_000, time_interval_months: 12)
+
+        expect {
+          post vehicle_reminder_thresholds_path(vehicle),
+               params: { reminder_threshold: { service_type_id: service_type.id,
+                                               mileage_interval: 8_000,
+                                               time_interval_months: 6 } }
+        }.not_to change(ReminderThreshold, :count)
+
+        expect(response).to redirect_to(vehicle_reminder_thresholds_path(vehicle))
+        expect(existing.reload.mileage_interval).to eq(8_000)
+        expect(existing.time_interval_months).to eq(6)
+      end
+    end
+
     context "with both intervals blank" do
       it "does not create a threshold and redirects gracefully" do
         expect {
@@ -185,6 +203,18 @@ RSpec.describe "ReminderThresholds", type: :request do
         follow_redirect!
         expect(response.body).to include("Reminder threshold updated")
         expect(threshold.reload.mileage_interval).to eq(8_000)
+      end
+
+      it "ignores crafted service_type_id changes" do
+        other_service_type = create(:service_type)
+
+        patch vehicle_reminder_threshold_path(vehicle, threshold),
+              params: { reminder_threshold: { service_type_id: other_service_type.id,
+                                              mileage_interval: 8_000,
+                                              time_interval_months: 6 } }
+
+        expect(response).to redirect_to(vehicle_reminder_thresholds_path(vehicle))
+        expect(threshold.reload.service_type_id).to eq(service_type.id)
       end
     end
 

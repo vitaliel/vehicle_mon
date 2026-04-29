@@ -21,7 +21,9 @@ class ReminderThresholdsController < ApplicationController
       redirect_to vehicle_reminder_thresholds_path(@vehicle), notice: "No threshold configured."
       return
     end
-    @threshold = @vehicle.reminder_thresholds.build(threshold_params)
+    attrs = threshold_params
+    @threshold = @vehicle.reminder_thresholds.find_or_initialize_by(service_type_id: attrs[:service_type_id])
+    @threshold.assign_attributes(attrs.except(:service_type_id))
     if @threshold.save
       redirect_to vehicle_reminder_thresholds_path(@vehicle), notice: "Reminder threshold saved."
     else
@@ -35,12 +37,15 @@ class ReminderThresholdsController < ApplicationController
   end
 
   def update
-    if both_intervals_blank?(threshold_params)
+    attrs = threshold_params.except(:service_type_id)
+
+    if both_intervals_blank?(attrs)
       @threshold.destroy
       redirect_to vehicle_reminder_thresholds_path(@vehicle), notice: "Threshold removed."
       return
     end
-    if @threshold.update(threshold_params)
+
+    if @threshold.update(attrs)
       redirect_to vehicle_reminder_thresholds_path(@vehicle), notice: "Reminder threshold updated."
     else
       @service_types = ServiceType.order(:name)

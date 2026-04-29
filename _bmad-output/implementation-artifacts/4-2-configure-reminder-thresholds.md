@@ -1,6 +1,6 @@
 # Story 4.2: Configure Reminder Thresholds
 
-Status: review
+Status: done
 
 ## Story
 
@@ -75,6 +75,11 @@ so that the system knows when to alert me that maintenance is due.
   - [x] `PATCH update` — valid params: updates threshold, redirects to index with flash[:notice]
   - [x] `PATCH update` — both blank: destroys threshold, redirects to index
   - [x] `DELETE destroy` — destroys and redirects to index with flash[:notice]
+
+### Review Findings
+
+- [x] [Review][Patch] service_type_id can be changed via crafted update request [app/controllers/reminder_thresholds_controller.rb:43]
+- [x] [Review][Patch] create path can raise on duplicate vehicle/service_type instead of handling uniqueness cleanly [app/controllers/reminder_thresholds_controller.rb:24]
 
 ## Dev Notes
 

@@ -47,5 +47,13 @@ RSpec.describe ReminderThreshold, type: :model do
                         mileage_interval: nil, time_interval_months: nil)
       expect(threshold).to be_valid
     end
+
+    it "is invalid with duplicate vehicle/service_type pair" do
+      create(:reminder_threshold, vehicle: vehicle, service_type: service_type)
+      duplicate = build(:reminder_threshold, vehicle: vehicle, service_type: service_type)
+
+      expect(duplicate).not_to be_valid
+      expect(duplicate.errors[:service_type_id]).to be_present
+    end
   end
 end
