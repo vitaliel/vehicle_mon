@@ -244,6 +244,64 @@ RSpec.describe "Vehicles", type: :request do
         get vehicle_path(other_vehicle)
         expect(response).to redirect_to(root_path)
       end
+
+      context "due-soon section" do
+        let(:vehicle) { create(:vehicle, user: user, current_mileage: 60_000) }
+        let(:service_type) { create(:service_type) }
+
+        it "shows OK badge when threshold is configured and not breached" do
+          create(:reminder_threshold, vehicle: vehicle, service_type: service_type,
+                 mileage_interval: 15_000, time_interval_months: nil)
+          create(:service_log_entry, vehicle: vehicle, service_type: service_type,
+                 mileage_at_service: 50_000, serviced_on: 1.month.ago)
+          get vehicle_path(vehicle)
+          expect(response).to have_http_status(:ok)
+          expect(response.body).to include(service_type.name)
+          expect(response.body).to include("OK")
+        end
+
+        it "shows Due Soon badge when threshold is breached" do
+          create(:reminder_threshold, vehicle: vehicle, service_type: service_type,
+                 mileage_interval: 5_000, time_interval_months: nil)
+          create(:service_log_entry, vehicle: vehicle, service_type: service_type,
+                 mileage_at_service: 50_000, serviced_on: 1.month.ago)
+          get vehicle_path(vehicle)
+          expect(response).to have_http_status(:ok)
+          expect(response.body).to include(service_type.name)
+          expect(response.body).to include("Due Soon")
+        end
+
+        it "shows Not configured for service types with no threshold" do
+          _ = service_type # force creation before the request so it appears in ServiceType.order(:name)
+          get vehicle_path(vehicle)
+          expect(response).to have_http_status(:ok)
+          expect(response.body).to include(service_type.name)
+          expect(response.body).to include("Not configured")
+        end
+
+        it "shows all seeded service types in the due-soon section" do
+          service_types = [
+            create(:service_type, name: "Engine Oil"),
+            create(:service_type, name: "Spark Plugs"),
+            create(:service_type, name: "Air Filter"),
+            create(:service_type, name: "Brake Pads"),
+            create(:service_type, name: "Transmission Fluid"),
+            create(:service_type, name: "Tires")
+          ]
+          get vehicle_path(vehicle)
+          service_types.each do |st|
+            expect(response.body).to include(st.name)
+          end
+        end
+
+        it "delegates due-soon calculation to DueSoonCalculator (never inline logic)" do
+          create(:reminder_threshold, vehicle: vehicle, service_type: service_type,
+                 mileage_interval: 15_000, time_interval_months: nil)
+          expect(DueSoonCalculator).to receive(:call).with(vehicle: vehicle, service_type: service_type).and_call_original
+          get vehicle_path(vehicle)
+          expect(response).to have_http_status(:ok)
+        end
+      end
     end
   end
 

@@ -24,6 +24,51 @@
     </div>
   </div>
 
+  <h4 class="mb-3">Maintenance Status</h4>
+  <div class="table-responsive mb-4" style="max-width: 700px;">
+    <table class="table align-middle">
+      <thead>
+        <tr>
+          <th>Service Type</th>
+          <th>Status</th>
+          <th>Mileage Remaining</th>
+          <th>Days Remaining</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @due_soon_statuses.each do |service_type, result| %>
+          <tr>
+            <td><%= service_type.name %></td>
+            <td>
+              <% case result[:status]
+                 when :ok %>
+                <span class="badge bg-success">OK</span>
+              <% when :due_soon %>
+                <span class="badge bg-warning text-dark">Due Soon</span>
+              <% when :unconfigured %>
+                <span class="badge bg-secondary">Not configured</span>
+              <% end %>
+            </td>
+            <td>
+              <% if result[:mileage_remaining] %>
+                <%= number_with_delimiter(result[:mileage_remaining]) %> km
+              <% else %>
+                —
+              <% end %>
+            </td>
+            <td>
+              <% if result[:days_remaining] %>
+                <%= result[:days_remaining] %> days
+              <% else %>
+                —
+              <% end %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+
   <%= link_to "View Service History", vehicle_service_log_entries_path(@vehicle), class: "btn btn-outline-primary" %>
   <%= link_to "Configure Reminders", vehicle_reminder_thresholds_path(@vehicle), class: "btn btn-outline-secondary" %>
   <%= link_to "← Back to Vehicles", vehicles_path, class: "btn btn-outline-secondary" %>

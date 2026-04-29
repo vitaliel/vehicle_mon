@@ -1,6 +1,6 @@
 # Story 4.3: Due-Soon Status on Vehicle Detail View
 
-Status: ready-for-dev
+Status: review
 
 ## Story
 
@@ -25,27 +25,27 @@ so that I know exactly which services are coming up and how much time or mileage
 
 ## Tasks / Subtasks
 
-- [ ] Task 1: Modify `VehiclesController#show` to compute due-soon data (AC: #1, #2, #3)
-  - [ ] Reload `@vehicle` with eager-loaded associations: `current_user.vehicles.includes(:service_log_entries, :reminder_thresholds).find(params[:id])` in `set_vehicle` OR eager-load inside `show`
-  - [ ] Load all service types: `@service_types = ServiceType.order(:name)`
-  - [ ] Build `@due_soon_statuses` hash: `{ service_type => DueSoonCalculator.call(vehicle: @vehicle, service_type: service_type) }` for each service type
-  - [ ] Assign both `@service_types` and `@due_soon_statuses` as instance variables — **no logic in view**
+- [x] Task 1: Modify `VehiclesController#show` to compute due-soon data (AC: #1, #2, #3)
+  - [x] Reload `@vehicle` with eager-loaded associations: `current_user.vehicles.includes(:service_log_entries, :reminder_thresholds).find(params[:id])` in `set_vehicle` OR eager-load inside `show`
+  - [x] Load all service types: `@service_types = ServiceType.order(:name)`
+  - [x] Build `@due_soon_statuses` hash: `{ service_type => DueSoonCalculator.call(vehicle: @vehicle, service_type: service_type) }` for each service type
+  - [x] Assign both `@service_types` and `@due_soon_statuses` as instance variables — **no logic in view**
 
-- [ ] Task 2: Update `app/views/vehicles/show.html.erb` to render due-soon section (AC: #1, #2)
-  - [ ] Add a "Maintenance Status" section below the mileage update card
-  - [ ] Iterate `@due_soon_statuses` — one row per service type
-  - [ ] Render Bootstrap badge per status:
+- [x] Task 2: Update `app/views/vehicles/show.html.erb` to render due-soon section (AC: #1, #2)
+  - [x] Add a "Maintenance Status" section below the mileage update card
+  - [x] Iterate `@due_soon_statuses` — one row per service type
+  - [x] Render Bootstrap badge per status:
     - `:ok` → `badge bg-success` — show `mileage_remaining` km and/or `days_remaining` days if present
     - `:due_soon` → `badge bg-warning text-dark` — show remaining values; 0 or negative means overdue
     - `:unconfigured` → `badge bg-secondary` — show "Not configured"
-  - [ ] Display `mileage_remaining` only when non-nil; display `days_remaining` only when non-nil
+  - [x] Display `mileage_remaining` only when non-nil; display `days_remaining` only when non-nil
 
-- [ ] Task 3: Extend `spec/requests/vehicles_spec.rb` with due-soon display specs (AC: #1, #2, #3)
-  - [ ] `GET /vehicles/:id` — with configured threshold and log entry: shows service type name, green "ok" badge (or relevant badge text)
-  - [ ] `GET /vehicles/:id` — with `:due_soon` threshold breached: shows yellow/amber badge
-  - [ ] `GET /vehicles/:id` — with no threshold configured: shows "Not configured" text for that service type
-  - [ ] `GET /vehicles/:id` — all 6 seeded service types appear in the due-soon section
-  - [ ] Verify `DueSoonCalculator.call` is invoked (via stub or by confirming badge output), never inline logic
+- [x] Task 3: Extend `spec/requests/vehicles_spec.rb` with due-soon display specs (AC: #1, #2, #3)
+  - [x] `GET /vehicles/:id` — with configured threshold and log entry: shows service type name, green "ok" badge (or relevant badge text)
+  - [x] `GET /vehicles/:id` — with `:due_soon` threshold breached: shows yellow/amber badge
+  - [x] `GET /vehicles/:id` — with no threshold configured: shows "Not configured" text for that service type
+  - [x] `GET /vehicles/:id` — all 6 seeded service types appear in the due-soon section
+  - [x] Verify `DueSoonCalculator.call` is invoked (via stub or by confirming badge output), never inline logic
 
 ## Dev Notes
 
@@ -181,4 +181,13 @@ claude-sonnet-4.6
 
 ### Completion Notes List
 
+- Implemented `VehiclesController#show` with eager-loading of `:service_log_entries` and `:reminder_thresholds` to prevent N+1 queries; extracted shared `build_due_soon_data` private method also called from `update_mileage` failure path (which renders `:show`).
+- Updated `app/views/vehicles/show.html.erb` with a "Maintenance Status" table section rendering Bootstrap badges (`bg-success` / `bg-warning text-dark` / `bg-secondary`) for `:ok` / `:due_soon` / `:unconfigured` states; mileage_remaining and days_remaining shown conditionally.
+- Added 5 new request specs covering all badge states, all-6-service-types display, and DueSoonCalculator delegation. Fixed lazy `let` ordering issue — service_type materialized before the request in the "Not configured" test.
+- Full regression suite: 175 examples, 0 failures.
+
 ### File List
+
+- `app/controllers/vehicles_controller.rb`
+- `app/views/vehicles/show.html.erb`
+- `spec/requests/vehicles_spec.rb`
