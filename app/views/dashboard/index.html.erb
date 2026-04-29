@@ -1,0 +1,21 @@
+<% content_for :title, "Dashboard" %>
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h1 class="h3">My Vehicles</h1>
+  <%= link_to "Add Vehicle", new_vehicle_path, class: "btn btn-primary" %>
+</div>
+
+<% if @vehicle_summaries.empty? %>
+  <div class="text-center py-5 text-muted">
+    <p class="fs-5">You haven't added any vehicles yet.</p>
+    <%= link_to "Add your first vehicle", new_vehicle_path, class: "btn btn-outline-primary" %>
+  </div>
+<% else %>
+  <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+    <% @vehicle_summaries.each do |summary| %>
+      <div class="col">
+        <%= render 'shared/vehicle_card', vehicle: summary[:vehicle], status: summary[:status] %>
+      </div>
+    <% end %>
+  </div>
+<% end %>
