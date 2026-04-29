@@ -10,16 +10,19 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_04_28_133600) do
+ActiveRecord::Schema[8.1].define(version: 2026_04_29_103712) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pg_stat_statements"
 
   create_table "reminder_thresholds", force: :cascade do |t|
     t.datetime "created_at", null: false
+    t.integer "mileage_interval"
+    t.bigint "service_type_id", null: false
+    t.integer "time_interval_months"
     t.datetime "updated_at", null: false
     t.bigint "vehicle_id", null: false
-    t.index ["vehicle_id"], name: "index_reminder_thresholds_on_vehicle_id"
+    t.index ["vehicle_id", "service_type_id"], name: "index_reminder_thresholds_on_vehicle_id_and_service_type_id", unique: true
   end
 
   create_table "service_log_entries", force: :cascade do |t|
@@ -72,6 +75,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_28_133600) do
     t.index ["user_id"], name: "index_vehicles_on_user_id"
   end
 
+  add_foreign_key "reminder_thresholds", "service_types"
   add_foreign_key "reminder_thresholds", "vehicles"
   add_foreign_key "service_log_entries", "service_types"
   add_foreign_key "service_log_entries", "vehicles"

@@ -1,6 +1,6 @@
 # Story 4.1: DueSoonCalculator Service Object
 
-Status: ready-for-dev
+Status: review
 
 ## Story
 
@@ -36,36 +36,36 @@ so that calculation is consistent, testable, and never duplicated across control
 
 ## Tasks / Subtasks
 
-- [ ] Task 1: Migrate `reminder_thresholds` to add missing columns (AC: #1–#5)
-  - [ ] Generate migration: `rails generate migration AddColumnsToReminderThresholds service_type_id:bigint:index mileage_interval:integer time_interval_months:integer`
-  - [ ] Add `null: false` constraint on `service_type_id`, add foreign key to `service_types`
-  - [ ] Add unique index on `(vehicle_id, service_type_id)` (architecture requirement)
-  - [ ] Run `rails db:migrate`
+- [x] Task 1: Migrate `reminder_thresholds` to add missing columns (AC: #1–#5)
+  - [x] Generate migration: `rails generate migration AddColumnsToReminderThresholds service_type_id:bigint:index mileage_interval:integer time_interval_months:integer`
+  - [x] Add `null: false` constraint on `service_type_id`, add foreign key to `service_types`
+  - [x] Add unique index on `(vehicle_id, service_type_id)` (architecture requirement)
+  - [x] Run `rails db:migrate`
 
-- [ ] Task 2: Update `ReminderThreshold` model (AC: #1–#5)
-  - [ ] Add `belongs_to :service_type`
-  - [ ] Verify existing `belongs_to :vehicle` is present
-  - [ ] No other model changes needed for this story
+- [x] Task 2: Update `ReminderThreshold` model (AC: #1–#5)
+  - [x] Add `belongs_to :service_type`
+  - [x] Verify existing `belongs_to :vehicle` is present
+  - [x] No other model changes needed for this story
 
-- [ ] Task 3: Add `reminder_thresholds` FactoryBot factory (AC: #6)
-  - [ ] Create `spec/factories/reminder_thresholds.rb` with `vehicle`, `service_type`, `mileage_interval: 10_000`, `time_interval_months: 12`
+- [x] Task 3: Add `reminder_thresholds` FactoryBot factory (AC: #6)
+  - [x] Create `spec/factories/reminder_thresholds.rb` with `vehicle`, `service_type`, `mileage_interval: 10_000`, `time_interval_months: 12`
 
-- [ ] Task 4: Create `app/services/due_soon_calculator.rb` (AC: #1–#5)
-  - [ ] Implement class method `DueSoonCalculator.call(vehicle:, service_type:)` returning Hash
-  - [ ] Return `:unconfigured` when no threshold row exists
-  - [ ] Calculate `mileage_remaining` = `last_entry.mileage_at_service + threshold.mileage_interval - vehicle.current_mileage`
-  - [ ] Calculate `days_remaining` = `(last_entry.serviced_on + threshold.time_interval_months.months - Date.current).to_i`
-  - [ ] Status `:due_soon` when either remaining value ≤ 0; `:ok` otherwise
-  - [ ] When no last entry exists, treat `mileage_at_service` as 0 and `serviced_on` as far in the past (or return `:unconfigured` — see Dev Notes)
+- [x] Task 4: Create `app/services/due_soon_calculator.rb` (AC: #1–#5)
+  - [x] Implement class method `DueSoonCalculator.call(vehicle:, service_type:)` returning Hash
+  - [x] Return `:unconfigured` when no threshold row exists
+  - [x] Calculate `mileage_remaining` = `last_entry.mileage_at_service + threshold.mileage_interval - vehicle.current_mileage`
+  - [x] Calculate `days_remaining` = `(last_entry.serviced_on + threshold.time_interval_months.months - Date.current).to_i`
+  - [x] Status `:due_soon` when either remaining value ≤ 0; `:ok` otherwise
+  - [x] When no last entry exists, treat `mileage_at_service` as 0 and `serviced_on` as far in the past (or return `:unconfigured` — see Dev Notes)
 
-- [ ] Task 5: Create `spec/services/due_soon_calculator_spec.rb` (AC: #6)
-  - [ ] `:unconfigured` — no threshold row
-  - [ ] `:ok` — dual threshold, neither breached
-  - [ ] `:due_soon` — mileage threshold breached
-  - [ ] `:due_soon` — time threshold breached
-  - [ ] mileage-only threshold: `days_remaining` nil
-  - [ ] time-only threshold: `mileage_remaining` nil
-  - [ ] No log entries + threshold present (edge case)
+- [x] Task 5: Create `spec/services/due_soon_calculator_spec.rb` (AC: #6)
+  - [x] `:unconfigured` — no threshold row
+  - [x] `:ok` — dual threshold, neither breached
+  - [x] `:due_soon` — mileage threshold breached
+  - [x] `:due_soon` — time threshold breached
+  - [x] mileage-only threshold: `days_remaining` nil
+  - [x] time-only threshold: `mileage_remaining` nil
+  - [x] No log entries + threshold present (edge case)
 
 ## Dev Notes
 
@@ -337,6 +337,28 @@ claude-sonnet-4.6
 
 ### Debug Log References
 
+- `reminder_thresholds` table confirmed missing `service_type_id`, `mileage_interval`, `time_interval_months` — migration created and run first as planned.
+- Regression found in `spec/requests/vehicles_spec.rb:194`: existing test used `ReminderThreshold.create!(vehicle: vehicle)` without `service_type`; fixed to use `create(:reminder_threshold, vehicle: vehicle)` factory.
+- No-entry edge case: `base_date = Date.current - threshold.time_interval_months.months` produces `days_remaining = 0`, which correctly triggers `:due_soon` (≤ 0).
+
 ### Completion Notes List
 
+- Created migration `20260429103712_add_columns_to_reminder_thresholds.rb` — adds `service_type_id` (not null, FK), `mileage_interval`, `time_interval_months`; adds unique index on `(vehicle_id, service_type_id)`; removes old single-column vehicle index.
+- Updated `app/models/reminder_threshold.rb` — added `belongs_to :service_type`.
+- Created `spec/factories/reminder_thresholds.rb` with sensible defaults (`mileage_interval: 10_000`, `time_interval_months: 12`).
+- Created `app/services/due_soon_calculator.rb` — implements `DueSoonCalculator.call(vehicle:, service_type:)` returning `{ status:, mileage_remaining:, days_remaining: }`. Handles all four states: `:unconfigured`, `:ok`, `:due_soon`, plus mileage-only / time-only configurations. No-entry edge case returns `:due_soon`.
+- Created `spec/services/due_soon_calculator_spec.rb` with 14 examples covering all AC scenarios.
+- Fixed `spec/requests/vehicles_spec.rb` regression (used bare `ReminderThreshold.create!` without required `service_type`).
+- **135 examples, 0 failures**, 2 pre-existing pending stubs unchanged.
+
 ### File List
+
+- `db/migrate/20260429103712_add_columns_to_reminder_thresholds.rb` (new)
+- `db/schema.rb` (auto-updated by migration)
+- `app/models/reminder_threshold.rb` (modified — added belongs_to :service_type)
+- `app/services/due_soon_calculator.rb` (new)
+- `spec/factories/reminder_thresholds.rb` (new)
+- `spec/services/due_soon_calculator_spec.rb` (new)
+- `spec/requests/vehicles_spec.rb` (modified — fixed ReminderThreshold cascade test to use factory)
+- `_bmad-output/implementation-artifacts/4-1-due-soon-calculator-service-object.md` (story updated)
+- `_bmad-output/implementation-artifacts/sprint-status.yaml` (updated)
