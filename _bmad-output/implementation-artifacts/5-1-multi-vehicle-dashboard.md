@@ -1,6 +1,6 @@
 # Story 5.1: Multi-Vehicle Dashboard
 
-Status: review
+Status: done
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 
@@ -59,6 +59,10 @@ so that I can immediately see which cars need attention without navigating to ea
   - [x] Create `spec/requests/dashboard_spec.rb` covering: unauthenticated redirect, empty state, vehicles listed, status badges, N+1 prevention via `DueSoonCalculator` delegation check
   - [x] Update `spec/requests/pages_spec.rb` → delete or repurpose (root now belongs to dashboard)
   - [x] Verify no existing specs break due to route change
+
+### Review Findings
+
+- [x] ✅ Clean review — all layers passed. No actionable findings from Blind Hunter, Edge Case Hunter, or Acceptance Auditor.
 
 ## Dev Notes
 
