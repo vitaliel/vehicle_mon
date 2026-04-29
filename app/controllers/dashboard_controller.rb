@@ -10,9 +10,9 @@ class DashboardController < ApplicationController
         DueSoonCalculator.call(vehicle: vehicle, service_type: st)[:status]
       end
       overall = if statuses.include?(:due_soon) then :due_soon
-                elsif statuses.include?(:ok)     then :ok
-                else                                  :unconfigured
-                end
+      elsif statuses.include?(:ok)     then :ok
+      else                                  :unconfigured
+      end
       { vehicle: vehicle, status: overall }
     end
   end
