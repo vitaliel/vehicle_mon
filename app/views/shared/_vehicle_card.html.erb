@@ -1,6 +1,18 @@
 <div class="card h-100 shadow-sm">
   <div class="card-body">
-    <h5 class="card-title"><%= vehicle.year %> <%= vehicle.make %> <%= vehicle.model %></h5>
+    <div class="d-flex justify-content-between align-items-start mb-2">
+      <h5 class="card-title mb-0"><%= vehicle.year %> <%= vehicle.make %> <%= vehicle.model %></h5>
+      <% if local_assigns[:status] %>
+        <% case status
+           when :ok %>
+          <span class="badge bg-success"><i class="bi bi-check-circle"></i> OK</span>
+        <% when :due_soon %>
+          <span class="badge bg-warning text-dark"><i class="bi bi-exclamation-triangle"></i> Due Soon</span>
+        <% when :unconfigured %>
+          <span class="badge bg-secondary">Not configured</span>
+        <% end %>
+      <% end %>
+    </div>
     <p class="card-text text-muted">
       <i class="bi bi-speedometer2"></i>
       <%= number_with_delimiter(vehicle.current_mileage) %> km

@@ -1,6 +1,6 @@
 # Story 5.1: Multi-Vehicle Dashboard
 
-Status: ready-for-dev
+Status: review
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 
@@ -34,31 +34,31 @@ so that I can immediately see which cars need attention without navigating to ea
 
 ## Tasks / Subtasks
 
-- [ ] Task 1: Change root route from `pages#index` to `dashboard#index` (AC: #1, #2, #3)
-  - [ ] In `config/routes.rb`, change `root "pages#index"` to `root "dashboard#index"`
+- [x] Task 1: Change root route from `pages#index` to `dashboard#index` (AC: #1, #2, #3)
+  - [x] In `config/routes.rb`, change `root "pages#index"` to `root "dashboard#index"`
 
-- [ ] Task 2: Create `DashboardController` (AC: #1, #2, #4)
-  - [ ] Create `app/controllers/dashboard_controller.rb` with `index` action
-  - [ ] Eager-load vehicles with `includes(:service_log_entries, :reminder_thresholds)` to prevent N+1
-  - [ ] Load all `ServiceType.order(:name)` once (not inside the per-vehicle loop)
-  - [ ] Call `DueSoonCalculator.call(vehicle:, service_type:)` for each vehicle × service_type pair
-  - [ ] Aggregate to per-vehicle overall status (`:due_soon` > `:ok` > `:unconfigured`)
-  - [ ] Assign `@vehicle_summaries` as ordered array of `{ vehicle:, status: }` hashes
+- [x] Task 2: Create `DashboardController` (AC: #1, #2, #4)
+  - [x] Create `app/controllers/dashboard_controller.rb` with `index` action
+  - [x] Eager-load vehicles with `includes(:service_log_entries, :reminder_thresholds)` to prevent N+1
+  - [x] Load all `ServiceType.order(:name)` once (not inside the per-vehicle loop)
+  - [x] Call `DueSoonCalculator.call(vehicle:, service_type:)` for each vehicle × service_type pair
+  - [x] Aggregate to per-vehicle overall status (`:due_soon` > `:ok` > `:unconfigured`)
+  - [x] Assign `@vehicle_summaries` as ordered array of `{ vehicle:, status: }` hashes
 
-- [ ] Task 3: Create `app/views/dashboard/index.html.erb` (AC: #1, #2, #3, #5)
-  - [ ] Render `shared/vehicle_card` partial for each summary, passing `vehicle:` and `status:` locals
-  - [ ] Use Bootstrap responsive grid (same as `vehicles/index.html.erb`)
-  - [ ] Include empty state when `@vehicle_summaries` is empty
+- [x] Task 3: Create `app/views/dashboard/index.html.erb` (AC: #1, #2, #3, #5)
+  - [x] Render `shared/vehicle_card` partial for each summary, passing `vehicle:` and `status:` locals
+  - [x] Use Bootstrap responsive grid (same as `vehicles/index.html.erb`)
+  - [x] Include empty state when `@vehicle_summaries` is empty
 
-- [ ] Task 4: Update `app/views/shared/_vehicle_card.html.erb` to render status badge (AC: #2)
-  - [ ] Add `status` local variable to the partial (default to `nil` for backward compatibility)
-  - [ ] Render the appropriate badge when `status` is present: green (`:ok`), amber (`:due_soon`), neutral (`:unconfigured`)
-  - [ ] Use consistent Bootstrap badge + Bootstrap Icons classes matching `vehicles/show.html.erb`
+- [x] Task 4: Update `app/views/shared/_vehicle_card.html.erb` to render status badge (AC: #2)
+  - [x] Add `status` local variable to the partial (default to `nil` for backward compatibility)
+  - [x] Render the appropriate badge when `status` is present: green (`:ok`), amber (`:due_soon`), neutral (`:unconfigured`)
+  - [x] Use consistent Bootstrap badge + Bootstrap Icons classes matching `vehicles/show.html.erb`
 
-- [ ] Task 5: Update specs (AC: #1–#4)
-  - [ ] Create `spec/requests/dashboard_spec.rb` covering: unauthenticated redirect, empty state, vehicles listed, status badges, N+1 prevention via `DueSoonCalculator` delegation check
-  - [ ] Update `spec/requests/pages_spec.rb` → delete or repurpose (root now belongs to dashboard)
-  - [ ] Verify no existing specs break due to route change
+- [x] Task 5: Update specs (AC: #1–#4)
+  - [x] Create `spec/requests/dashboard_spec.rb` covering: unauthenticated redirect, empty state, vehicles listed, status badges, N+1 prevention via `DueSoonCalculator` delegation check
+  - [x] Update `spec/requests/pages_spec.rb` → delete or repurpose (root now belongs to dashboard)
+  - [x] Verify no existing specs break due to route change
 
 ## Dev Notes
 
@@ -305,6 +305,33 @@ claude-sonnet-4.6
 
 ### Debug Log References
 
+- `ServiceType.first` → nil in test DB; fixed to `create(:service_type)` following vehicles_spec pattern.
+- Deleted stale `spec/helpers/pages_helper_spec.rb` and `spec/views/pages/index.html.erb_spec.rb` (pending, referenced deleted PagesHelper).
+
 ### Completion Notes List
 
+- Route changed: `root "pages#index"` → `root "dashboard#index"`
+- Created `DashboardController#index`: eager-loads vehicles with `includes(:service_log_entries, :reminder_thresholds)`, loads `ServiceType.order(:name)` once, calls `DueSoonCalculator.call` per vehicle×service_type, aggregates to per-vehicle `:due_soon`/`:ok`/`:unconfigured` status, assigns `@vehicle_summaries`.
+- Created `app/views/dashboard/index.html.erb`: Bootstrap responsive grid, empty state, renders `_vehicle_card` with `status:` local.
+- Extended `app/views/shared/_vehicle_card.html.erb`: added optional `status` badge using `local_assigns[:status]` — backward compatible with `vehicles/index.html.erb`.
+- Deleted vestigial files: `PagesController`, `pages/index.html.erb`, `pages_spec.rb`, `pages_helper_spec.rb`, `pages/index view spec`.
+- Created `spec/requests/dashboard_spec.rb`: 7 examples covering unauthenticated redirect, empty state, vehicles listed, cross-user isolation, DueSoonCalculator delegation, due-soon badge, ok badge, unconfigured badge.
+- Full suite: 182 examples, 0 failures.
+
 ### File List
+
+- config/routes.rb
+- app/controllers/dashboard_controller.rb (created)
+- app/views/dashboard/index.html.erb (created)
+- app/views/shared/_vehicle_card.html.erb
+- spec/requests/dashboard_spec.rb (created)
+- spec/requests/pages_spec.rb (deleted)
+- app/controllers/pages_controller.rb (deleted)
+- app/views/pages/index.html.erb (deleted)
+- spec/helpers/pages_helper_spec.rb (deleted)
+- spec/views/pages/index.html.erb_spec.rb (deleted)
+- _bmad-output/implementation-artifacts/sprint-status.yaml
+
+## Change Log
+
+- **2026-04-29**: Implemented Story 5.1 — multi-vehicle dashboard. Changed root route from `pages#index` to `dashboard#index`. Created `DashboardController#index` with N+1-safe eager loading and per-vehicle due-soon status aggregation via `DueSoonCalculator`. Created `dashboard/index.html.erb` with Bootstrap grid and empty state. Extended `_vehicle_card` partial with optional `status` badge (backward compatible). Removed vestigial PagesController, views, and specs. Added `dashboard_spec.rb` with 7 request specs. Full suite: 182 examples, 0 failures.
