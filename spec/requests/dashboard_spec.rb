@@ -68,6 +68,11 @@ RSpec.describe "Dashboard", type: :request do
         expect(response.body).to include("OK")
       end
 
+      it "includes a link to each vehicle's detail page" do
+        get root_path
+        expect(response.body).to include(%(href="#{vehicle_path(vehicle)}"))
+      end
+
       it "shows not configured badge when no thresholds are set" do
         service_type # force creation so DueSoonCalculator iterates it and returns :unconfigured
         get root_path

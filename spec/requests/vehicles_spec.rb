@@ -239,10 +239,12 @@ RSpec.describe "Vehicles", type: :request do
         expect(response.body).to include(%(href="#{vehicle_service_log_entries_path(vehicle)}"))
       end
 
-      it "redirects to root for another user's vehicle" do
+      it "redirects to root with flash[:alert] for another user's vehicle" do
         other_vehicle = create(:vehicle, user: other_user)
         get vehicle_path(other_vehicle)
         expect(response).to redirect_to(root_path)
+        follow_redirect!
+        expect(response.body).to include("Record not found")
       end
 
       context "due-soon section" do

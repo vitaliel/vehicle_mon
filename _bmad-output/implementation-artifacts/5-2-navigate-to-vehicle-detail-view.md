@@ -1,6 +1,6 @@
 # Story 5.2: Navigate to Vehicle Detail View
 
-Status: ready-for-dev
+Status: review
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 
@@ -23,16 +23,16 @@ so that I can see the full service history and due-soon status for a specific ca
 
 ## Tasks / Subtasks
 
-- [ ] Task 1: Make vehicle card title a clickable link (AC: #1)
-  - [ ] In `app/views/shared/_vehicle_card.html.erb`, wrap the `<h5>` title in `link_to vehicle_path(vehicle)` so clicking the vehicle name navigates to `vehicles#show`
-  - [ ] Keep the existing "View" button — do not remove it
+- [x] Task 1: Make vehicle card title a clickable link (AC: #1)
+  - [x] In `app/views/shared/_vehicle_card.html.erb`, wrap the `<h5>` title in `link_to vehicle_path(vehicle)` so clicking the vehicle name navigates to `vehicles#show`
+  - [x] Keep the existing "View" button — do not remove it
 
-- [ ] Task 2: Add `flash[:alert]` assertion to cross-user redirect spec (AC: #2)
-  - [ ] In `spec/requests/vehicles_spec.rb`, find the `"redirects to root for another user's vehicle"` example under `GET /vehicles/:id`
-  - [ ] Add `follow_redirect!` and `expect(response.body).to include("Record not found")` **or** use `expect(flash[:alert]).to be_present` — see Dev Notes for the correct pattern
+- [x] Task 2: Add `flash[:alert]` assertion to cross-user redirect spec (AC: #2)
+  - [x] In `spec/requests/vehicles_spec.rb`, find the `"redirects to root for another user's vehicle"` example under `GET /vehicles/:id`
+  - [x] Add `follow_redirect!` and `expect(response.body).to include("Record not found")` **or** use `expect(flash[:alert]).to be_present` — see Dev Notes for the correct pattern
 
-- [ ] Task 3: Add navigation specs to dashboard_spec (AC: #1)
-  - [ ] In `spec/requests/dashboard_spec.rb`, under the `"when authenticated with vehicles"` context, add an example that verifies each vehicle card contains a link to `vehicle_path(vehicle)`
+- [x] Task 3: Add navigation specs to dashboard_spec (AC: #1)
+  - [x] In `spec/requests/dashboard_spec.rb`, under the `"when authenticated with vehicles"` context, add an example that verifies each vehicle card contains a link to `vehicle_path(vehicle)`
 
 ## Dev Notes
 
@@ -151,4 +151,17 @@ claude-sonnet-4.6
 
 ### Completion Notes List
 
+- Wrapped `<h5>` vehicle title in `link_to vehicle_path(vehicle)` in `_vehicle_card.html.erb`; existing "View" button retained.
+- Updated cross-user redirect spec in `vehicles_spec.rb` to use `follow_redirect!` + `response.body.include?("Record not found")` — matches existing project pattern.
+- Added navigation link spec in `dashboard_spec.rb` verifying `href` to `vehicle_path(vehicle)` is present in rendered response.
+- All 183 tests pass, 0 failures.
+
 ### File List
+
+- `app/views/shared/_vehicle_card.html.erb` — wrapped `<h5>` title in `link_to vehicle_path(vehicle)`
+- `spec/requests/vehicles_spec.rb` — updated cross-user redirect example with flash alert assertion
+- `spec/requests/dashboard_spec.rb` — added navigation link spec
+
+## Change Log
+
+- 2026-04-29: Implemented Story 5.2 — vehicle card title is now a link to `vehicles#show`; added flash alert assertion to cross-user redirect spec; added dashboard navigation link spec. All ACs satisfied. (183 tests, 0 failures)
