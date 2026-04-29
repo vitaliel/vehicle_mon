@@ -351,14 +351,18 @@ RSpec.describe "Vehicles", type: :request do
 
         it "shows due-soon badges for both service types on vehicle show" do
           create(:reminder_threshold, vehicle: vehicle, service_type: service_type_1,
-                 mileage_interval: 3_000, time_interval_months: nil)
+                 mileage_interval: 15_000, time_interval_months: nil)
           create(:reminder_threshold, vehicle: vehicle, service_type: service_type_2,
-                 mileage_interval: 3_000, time_interval_months: nil)
+                 mileage_interval: 15_000, time_interval_months: nil)
           create(:service_log_entry, vehicle: vehicle, service_type: service_type_1,
                  mileage_at_service: 40_000, serviced_on: 6.months.ago)
           create(:service_log_entry, vehicle: vehicle, service_type: service_type_2,
                  mileage_at_service: 40_000, serviced_on: 6.months.ago)
-          # vehicle.current_mileage: 50_000; 40_000 + 3_000 - 50_000 = -7_000 ≤ 0 → :due_soon for both
+          # vehicle.current_mileage: 50_000; 40_000 + 15_000 - 50_000 = 5_000 > 0 → :ok for both
+          # after update to 60_000: 40_000 + 15_000 - 60_000 = -5_000 ≤ 0 → :due_soon for both
+
+          get vehicle_path(vehicle)
+          expect(response.body).not_to include("Due Soon")
 
           expect(DueSoonCalculator).to receive(:call)
             .with(vehicle: vehicle, service_type: service_type_1)

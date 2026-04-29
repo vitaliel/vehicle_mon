@@ -1,6 +1,6 @@
 # Story 4.4: Recalculate Due-Soon on Data Changes
 
-Status: review
+Status: done
 
 ## Story
 
@@ -44,6 +44,14 @@ so that the reminders always reflect the current state of my vehicle.
   - [x] In `spec/requests/vehicles_spec.rb` `PATCH update_mileage` context: vehicle with 2 service types and breached thresholds, update mileage further, follow redirect, verify due-soon badges shown for both service types
   - [x] In `spec/requests/reminder_thresholds_spec.rb` `PATCH update` context: lower a threshold's `mileage_interval` so current state becomes `:due_soon`, follow redirect to vehicle show, verify due-soon badge appears
   - [x] In each new spec, verify `DueSoonCalculator.call` is invoked via `and_call_original` stub (same pattern as Story 4.3's delegation spec in `spec/requests/vehicles_spec.rb`)
+
+### Review Findings
+
+- [x] [Review][Decision] Reminder threshold create redirect scope conflict — this story says to change `ReminderThresholdsController#create` redirect to `vehicle_path(@vehicle)` (Task 2), but Project Structure Notes says to change `update` redirect only. **Resolved:** keep `create` redirect to `vehicle_path(@vehicle)`.
+- [x] [Review][Patch] Revert unrelated branding/title change in layout [app/views/layouts/application.html.erb:3]
+- [x] [Review][Patch] Strengthen service-log create recalculation spec to assert due-soon status outcome (not only redirect/content presence) [spec/requests/service_log_entries_spec.rb:185]
+- [x] [Review][Patch] Strengthen mileage-update recalculation spec so it proves mileage update drives the shown due-soon result [spec/requests/vehicles_spec.rb:344]
+- [x] [Review][Defer] Handle failed threshold destroy in blank-interval update path [app/controllers/reminder_thresholds_controller.rb:42] — deferred, pre-existing
 
 ## Dev Notes
 

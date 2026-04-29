@@ -198,6 +198,9 @@ RSpec.describe "ServiceLogEntries", type: :request do
                mileage_at_service: 50_000, serviced_on: 6.months.ago)
         # Before: 50_000 + 5_000 - 60_000 = -5_000 ≤ 0 → :due_soon
         # After logging at 60_000: 60_000 + 5_000 - 60_000 = 5_000 > 0 → :ok
+        get vehicle_path(vehicle)
+        expect(response.body).to include("Due Soon")
+
         expect(DueSoonCalculator).to receive(:call)
           .with(vehicle: vehicle, service_type: service_type)
           .and_call_original
@@ -213,6 +216,7 @@ RSpec.describe "ServiceLogEntries", type: :request do
         expect(response).to redirect_to(vehicle_path(vehicle))
         follow_redirect!
         expect(response.body).to include(service_type.name)
+        expect(response.body).not_to include("Due Soon")
       end
     end
   end
