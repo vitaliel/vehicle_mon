@@ -1,0 +1,8 @@
+<div class="container py-4" style="max-width: 600px;">
+  <h1 class="mb-4">Edit Threshold</h1>
+  <p class="text-muted mb-4">
+    <%= @vehicle.year %> <%= @vehicle.make %> <%= @vehicle.model %>
+    &mdash; <%= @threshold.service_type.name %>
+  </p>
+  <%= render "form", vehicle: @vehicle, threshold: @threshold %>
+</div>
