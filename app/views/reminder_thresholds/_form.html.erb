@@ -1,0 +1,31 @@
+<%= form_with(model: [ @vehicle, @threshold ], class: "needs-validation") do |f| %>
+  <%= render "devise/shared/error_messages", resource: @threshold %>
+
+  <div class="mb-3">
+    <%= f.label :service_type_id, "Service Type", class: "form-label" %>
+    <%= f.collection_select :service_type_id, @service_types, :id, :name,
+          { prompt: "Select a service type" },
+          { class: "form-select", required: true,
+            disabled: @threshold.persisted? } %>
+    <% if @threshold.persisted? %>
+      <%= f.hidden_field :service_type_id %>
+    <% end %>
+  </div>
+
+  <div class="mb-3">
+    <%= f.label :mileage_interval, "Mileage Interval (km, optional)", class: "form-label" %>
+    <%= f.number_field :mileage_interval, class: "form-control", min: 1,
+          placeholder: "e.g. 10000" %>
+  </div>
+
+  <div class="mb-3">
+    <%= f.label :time_interval_months, "Time Interval (months, optional)", class: "form-label" %>
+    <%= f.number_field :time_interval_months, class: "form-control", min: 1,
+          placeholder: "e.g. 12" %>
+  </div>
+
+  <p class="text-muted small">Leave both blank to remove the threshold for this service type.</p>
+
+  <%= f.submit class: "btn btn-primary" %>
+  <%= link_to "Cancel", vehicle_reminder_thresholds_path(@vehicle), class: "btn btn-outline-secondary ms-2" %>
+<% end %>
