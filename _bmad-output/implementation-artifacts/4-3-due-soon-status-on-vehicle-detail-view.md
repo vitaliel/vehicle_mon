@@ -1,6 +1,6 @@
 # Story 4.3: Due-Soon Status on Vehicle Detail View
 
-Status: review
+Status: done
 
 ## Story
 
@@ -46,6 +46,11 @@ so that I know exactly which services are coming up and how much time or mileage
   - [x] `GET /vehicles/:id` — with no threshold configured: shows "Not configured" text for that service type
   - [x] `GET /vehicles/:id` — all 6 seeded service types appear in the due-soon section
   - [x] Verify `DueSoonCalculator.call` is invoked (via stub or by confirming badge output), never inline logic
+
+### Review Findings
+
+- [x] [Review][Patch] Avoid N+1 query path when `update_mileage` render falls back to `:show` [app/controllers/vehicles_controller.rb:48]
+- [x] [Review][Patch] Omit nil remaining values instead of rendering placeholder dashes [app/views/vehicles/show.html.erb:53]
 
 ## Dev Notes
 

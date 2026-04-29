@@ -35,7 +35,7 @@
 # - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
 
 generated: 2026-04-24T17:28:06.155Z
-last_updated: 2026-04-29T17:07:48Z
+last_updated: 2026-04-29
 project: bmad
 project_key: NOKEY
 tracking_system: file-system
@@ -67,7 +67,7 @@ development_status:
   epic-4: in-progress
   4-1-due-soon-calculator-service-object: done
   4-2-configure-reminder-thresholds: done
-  4-3-due-soon-status-on-vehicle-detail-view: review
+  4-3-due-soon-status-on-vehicle-detail-view: done
   4-4-recalculate-due-soon-on-data-changes: backlog
   epic-4-retrospective: optional
 

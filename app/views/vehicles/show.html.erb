@@ -52,15 +52,11 @@
             <td>
               <% if result[:mileage_remaining] %>
                 <%= number_with_delimiter(result[:mileage_remaining]) %> km
-              <% else %>
-                —
               <% end %>
             </td>
             <td>
               <% if result[:days_remaining] %>
                 <%= result[:days_remaining] %> days
-              <% else %>
-                —
               <% end %>
             </td>
           </tr>

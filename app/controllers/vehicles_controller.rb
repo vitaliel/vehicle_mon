@@ -49,6 +49,9 @@ class VehiclesController < ApplicationController
     if @vehicle.update(mileage_params)
       redirect_to vehicle_path(@vehicle), notice: "Mileage updated successfully."
     else
+      @vehicle = current_user.vehicles
+                             .includes(:service_log_entries, :reminder_thresholds)
+                             .find(params[:id])
       build_due_soon_data
       render :show, status: :unprocessable_entity
     end
