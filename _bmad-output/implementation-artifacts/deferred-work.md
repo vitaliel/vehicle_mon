@@ -11,3 +11,7 @@
 ## Deferred from: code review of 4-1-due-soon-calculator-service-object (2026-04-29)
 
 - Migration can fail on existing rows because `service_type_id` is added as NOT NULL immediately [db/migrate/20260429103712_add_columns_to_reminder_thresholds.rb:3] — deferred by user request. Reason: skip case when migration can fail.
+
+## Deferred from: code review of 4-4-recalculate-due-soon-on-data-changes (2026-04-29)
+
+- Handle failed threshold destroy in blank-interval update path [app/controllers/reminder_thresholds_controller.rb:42] — controller currently assumes `@threshold.destroy` succeeds and always shows success notice; if destroy fails, user gets incorrect feedback. Pre-existing behavior.

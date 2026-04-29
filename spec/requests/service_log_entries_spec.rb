@@ -137,7 +137,7 @@ RSpec.describe "ServiceLogEntries", type: :request do
         expect {
           post vehicle_service_log_entries_path(vehicle), params: valid_params
         }.to change(ServiceLogEntry, :count).by(1)
-        expect(response).to redirect_to(vehicle_service_log_entries_path(vehicle))
+        expect(response).to redirect_to(vehicle_path(vehicle))
         expect(flash[:notice]).to eq("Service entry logged successfully.")
       end
 
@@ -183,6 +183,40 @@ RSpec.describe "ServiceLogEntries", type: :request do
         post vehicle_service_log_entries_path(other_vehicle), params: valid_params
         expect(response).to redirect_to(root_path)
         expect(flash[:alert]).to be_present
+      end
+    end
+
+    context "recalculates due-soon status on vehicle show after create" do
+      let(:vehicle) { create(:vehicle, user: user, current_mileage: 60_000) }
+
+      before { sign_in user }
+
+      it "redirects to vehicle show where due-soon reflects the new log entry" do
+        create(:reminder_threshold, vehicle: vehicle, service_type: service_type,
+               mileage_interval: 5_000, time_interval_months: nil)
+        create(:service_log_entry, vehicle: vehicle, service_type: service_type,
+               mileage_at_service: 50_000, serviced_on: 6.months.ago)
+        # Before: 50_000 + 5_000 - 60_000 = -5_000 ≤ 0 → :due_soon
+        # After logging at 60_000: 60_000 + 5_000 - 60_000 = 5_000 > 0 → :ok
+        get vehicle_path(vehicle)
+        expect(response.body).to include("Due Soon")
+
+        expect(DueSoonCalculator).to receive(:call)
+          .with(vehicle: vehicle, service_type: service_type)
+          .and_call_original
+          .at_least(:once)
+
+        post vehicle_service_log_entries_path(vehicle),
+             params: { service_log_entry: {
+               service_type_id: service_type.id,
+               serviced_on: Date.today,
+               mileage_at_service: 60_000,
+               service_center: "Test Center"
+             } }
+        expect(response).to redirect_to(vehicle_path(vehicle))
+        follow_redirect!
+        expect(response.body).to include(service_type.name)
+        expect(response.body).not_to include("Due Soon")
       end
     end
   end

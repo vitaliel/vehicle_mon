@@ -104,7 +104,7 @@ RSpec.describe "ReminderThresholds", type: :request do
                                                mileage_interval: 10_000,
                                                time_interval_months: "" } }
         }.to change(ReminderThreshold, :count).by(1)
-        expect(response).to redirect_to(vehicle_reminder_thresholds_path(vehicle))
+        expect(response).to redirect_to(vehicle_path(vehicle))
         follow_redirect!
         expect(response.body).to include("Reminder threshold saved")
       end
@@ -118,7 +118,7 @@ RSpec.describe "ReminderThresholds", type: :request do
                                                mileage_interval: 10_000,
                                                time_interval_months: 12 } }
         }.to change(ReminderThreshold, :count).by(1)
-        expect(response).to redirect_to(vehicle_reminder_thresholds_path(vehicle))
+        expect(response).to redirect_to(vehicle_path(vehicle))
       end
     end
 
@@ -134,7 +134,7 @@ RSpec.describe "ReminderThresholds", type: :request do
                                                time_interval_months: 6 } }
         }.not_to change(ReminderThreshold, :count)
 
-        expect(response).to redirect_to(vehicle_reminder_thresholds_path(vehicle))
+        expect(response).to redirect_to(vehicle_path(vehicle))
         expect(existing.reload.mileage_interval).to eq(8_000)
         expect(existing.time_interval_months).to eq(6)
       end
@@ -199,7 +199,7 @@ RSpec.describe "ReminderThresholds", type: :request do
         patch vehicle_reminder_threshold_path(vehicle, threshold),
               params: { reminder_threshold: { mileage_interval: 8_000,
                                               time_interval_months: 6 } }
-        expect(response).to redirect_to(vehicle_reminder_thresholds_path(vehicle))
+        expect(response).to redirect_to(vehicle_path(vehicle))
         follow_redirect!
         expect(response.body).to include("Reminder threshold updated")
         expect(threshold.reload.mileage_interval).to eq(8_000)
@@ -213,7 +213,7 @@ RSpec.describe "ReminderThresholds", type: :request do
                                               mileage_interval: 8_000,
                                               time_interval_months: 6 } }
 
-        expect(response).to redirect_to(vehicle_reminder_thresholds_path(vehicle))
+        expect(response).to redirect_to(vehicle_path(vehicle))
         expect(threshold.reload.service_type_id).to eq(service_type.id)
       end
     end
@@ -225,7 +225,7 @@ RSpec.describe "ReminderThresholds", type: :request do
                 params: { reminder_threshold: { mileage_interval: "",
                                                 time_interval_months: "" } }
         }.to change(ReminderThreshold, :count).by(-1)
-        expect(response).to redirect_to(vehicle_reminder_thresholds_path(vehicle))
+        expect(response).to redirect_to(vehicle_path(vehicle))
         follow_redirect!
         expect(response.body).to include("Threshold removed")
       end
@@ -239,6 +239,28 @@ RSpec.describe "ReminderThresholds", type: :request do
         patch vehicle_reminder_threshold_path(other_vehicle, other_threshold),
               params: { reminder_threshold: { mileage_interval: 5_000 } }
         expect(response).to redirect_to(root_path)
+      end
+    end
+
+    context "recalculates due-soon status on vehicle show after threshold update" do
+      it "shows due-soon badge when mileage interval is lowered below current gap" do
+        create(:service_log_entry, vehicle: vehicle, service_type: service_type,
+               mileage_at_service: 40_000, serviced_on: 6.months.ago)
+        # vehicle.current_mileage: 45_000 (default)
+        # threshold.mileage_interval: 10_000 → 40_000 + 10_000 - 45_000 = 5_000 > 0 → :ok before update
+        expect(DueSoonCalculator).to receive(:call)
+          .with(vehicle: vehicle, service_type: service_type)
+          .and_call_original
+          .at_least(:once)
+
+        # Lower interval to 3_000 → 40_000 + 3_000 - 45_000 = -2_000 ≤ 0 → :due_soon after update
+        patch vehicle_reminder_threshold_path(vehicle, threshold),
+              params: { reminder_threshold: { mileage_interval: 3_000,
+                                              time_interval_months: "" } }
+        expect(response).to redirect_to(vehicle_path(vehicle))
+        follow_redirect!
+        expect(response.body).to include(service_type.name)
+        expect(response.body).to include("Due Soon")
       end
     end
   end

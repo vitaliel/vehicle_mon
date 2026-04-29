@@ -25,7 +25,7 @@ class ReminderThresholdsController < ApplicationController
     @threshold = @vehicle.reminder_thresholds.find_or_initialize_by(service_type_id: attrs[:service_type_id])
     @threshold.assign_attributes(attrs.except(:service_type_id))
     if @threshold.save
-      redirect_to vehicle_reminder_thresholds_path(@vehicle), notice: "Reminder threshold saved."
+      redirect_to vehicle_path(@vehicle), notice: "Reminder threshold saved."
     else
       @service_types = ServiceType.order(:name)
       render :new, status: :unprocessable_entity
@@ -41,12 +41,12 @@ class ReminderThresholdsController < ApplicationController
 
     if both_intervals_blank?(attrs)
       @threshold.destroy
-      redirect_to vehicle_reminder_thresholds_path(@vehicle), notice: "Threshold removed."
+      redirect_to vehicle_path(@vehicle), notice: "Threshold removed."
       return
     end
 
     if @threshold.update(attrs)
-      redirect_to vehicle_reminder_thresholds_path(@vehicle), notice: "Reminder threshold updated."
+      redirect_to vehicle_path(@vehicle), notice: "Reminder threshold updated."
     else
       @service_types = ServiceType.order(:name)
       render :edit, status: :unprocessable_entity

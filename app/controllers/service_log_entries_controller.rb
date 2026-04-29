@@ -14,7 +14,7 @@ class ServiceLogEntriesController < ApplicationController
   def create
     @entry = @vehicle.service_log_entries.build(entry_params)
     if @entry.save
-      redirect_to vehicle_service_log_entries_path(@vehicle), notice: "Service entry logged successfully."
+      redirect_to vehicle_path(@vehicle), notice: "Service entry logged successfully."
     else
       @service_types = ServiceType.order(:name)
       render :new, status: :unprocessable_entity
