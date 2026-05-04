@@ -29,8 +29,8 @@
               <td><%= entry.service_type.name %></td>
               <td><%= number_with_delimiter(entry.mileage_at_service) %> km</td>
               <td><%= entry.service_center %></td>
-              <td><%= number_to_currency(entry.parts_cost) %></td>
-              <td><%= number_to_currency(entry.labour_cost) %></td>
+              <td><%= number_to_currency(entry.parts_cost, unit: "MDL") %></td>
+              <td><%= number_to_currency(entry.labour_cost, unit: "MDL") %></td>
               <td><%= entry.notes %></td>
               <td>
                 <%= link_to "Edit", edit_vehicle_service_log_entry_path(@vehicle, entry),

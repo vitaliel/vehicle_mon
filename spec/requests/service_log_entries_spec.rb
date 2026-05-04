@@ -53,8 +53,8 @@ RSpec.describe "ServiceLogEntries", type: :request do
                serviced_on: Date.today, mileage_at_service: 10_000,
                parts_cost: 25.50, labour_cost: 80.00)
         get vehicle_service_log_entries_path(vehicle)
-        expect(response.body).to include(ActionController::Base.helpers.number_to_currency(25.50))
-        expect(response.body).to include(ActionController::Base.helpers.number_to_currency(80.00))
+        expect(response.body).to include(ActionController::Base.helpers.number_to_currency(25.50, unit: "MDL"))
+        expect(response.body).to include(ActionController::Base.helpers.number_to_currency(80.00, unit: "MDL"))
       end
 
       it "displays notes text" do
